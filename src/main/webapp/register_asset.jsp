@@ -73,7 +73,8 @@
                                                                              name="asset_description" required><br>
             Acquisition Date: <label for="acquisition_date"></label><input type="date" id="acquisition_date"
                                                                            name="acquisition_date" required><br>
-            For Rent: <label for="for_rent"></label><input type="checkbox" id="for_rent" name="for_rent" value= 1><br>
+            <%--For Rent: <label for="for_rent"></label><input type="checkbox" id="for_rent" name="for_rent" value=
+                1><br>--%>
             Asset Value: <label for="asset_value"></label><input type="number" id="asset_value" name="asset_value" required><br>
             Asset Type:
             <label for="asset_type"></label>
@@ -87,9 +88,6 @@
             <label for="asset_status"></label>
             <select id="asset_status" name="asset_status">
                 <option value="W">Working</option>
-                <option value="D">Deteriorated </option>
-                <option value="P">For Repair</option>
-                <option value="S">For Disposal</option>
             </select><br>
             Location Latitude: <label for="location_latitude"></label>
             <input type="number" id="location_latitude" name="location_latitude"
@@ -109,7 +107,7 @@
             <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
                 <option value="-1">None</option>
                 <%
-                    for (assets a : asset.getAssetsList()) { %>
+                    for (assets a : asset.getPropertyAssetsList()) { %>
                 <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
                 <% } %>
             <input type="submit" value="Register">

@@ -72,6 +72,65 @@ public class assets {
         return 1;
     }
 
+    public int update_asset() {
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET " +
+                    "asset_description = ?, forrent = ?, asset_value = ?, " +
+                    "status = ?, loc_lattitude = ?, loc_longiture = ?, enclosing_asset = ? WHERE asset_id = ?");
+            stmt.setString(1,   getAsset_description());
+            stmt.setInt(2,      getForrent());
+            stmt.setDouble(3,   getAsset_value());
+            stmt.setString(4,   String.valueOf(getStatus()));
+            stmt.setDouble(5,   getLoc_lattitude());
+            stmt.setDouble(6,   getLoc_longiture());
+            if (getEnclosing_asset() != -1) {
+                stmt.setInt(7, getEnclosing_asset());
+            } else {
+                stmt.setNull(7, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(8,     getAsset_id());
+            stmt.executeUpdate();
+            conn.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return 1;
+    }
+    public int delete_asset() {
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM assets WHERE asset_id = ?");
+            stmt.setInt(1,     getAsset_id());
+            stmt.executeUpdate();
+            conn.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return 1;
+    }
+    public int dispose_asset() {
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET status = 'X' WHERE asset_id = ?");
+            stmt.setInt(1,     getAsset_id());
+            stmt.executeUpdate();
+            conn.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return 1;
+    }
+
     public int generateAssetID() {
         int newID = 0;
         try {
@@ -143,6 +202,20 @@ public class assets {
     public char getType_asset() {
         return type_asset;
     }
+    public String getType_assetString() {
+        switch (type_asset) {
+            case 'P':
+                return "Property";
+            case 'E':
+                return "Equipment";
+            case 'F':
+                return "F&F";
+            case 'O':
+                return "Other";
+            default:
+                return "Unknown";
+        }
+    }
 
     public void setType_asset(char type_asset) {
         this.type_asset = type_asset;
@@ -150,6 +223,47 @@ public class assets {
 
     public char getStatus() {
         return status;
+    }
+    public String getStatusString() {
+        switch (status) {
+            case 'W':
+                return "Working";
+            case 'D':
+                return "Deteriorated";
+            case 'P':
+                return "For Repair";
+            case 'S':
+                return "For Disposal";
+            case 'X':
+                return "Disposed";
+            default:
+                return "Unknown";
+        }
+    }
+    public List<String> getStatusList() {
+        List<String> statusList = new ArrayList<>();
+        statusList.add("Working");
+        statusList.add("Deteriorated");
+        statusList.add("For Repair");
+        statusList.add("For Disposal");
+        statusList.add("Disposed");
+        return statusList;
+    }
+    public char getStatusChar(String status) {
+        switch (status) {
+            case "Working":
+                return 'W';
+            case "Deteriorated":
+                return 'D';
+            case "For Repair":
+                return 'P';
+            case "For Disposal":
+                return 'S';
+            case "Disposed":
+                return 'X';
+            default:
+                return 'U';
+        }
     }
 
     public void setStatus(char status) {
@@ -180,12 +294,65 @@ public class assets {
         this.hoa_name = hoa_name;
     }
 
-    public ArrayList<assets> getAssetsList() {
+    public ArrayList<assets> getPropertyAssetsList() {
         this.assetsList.clear();
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets");
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE type_asset " +
+                    "= 'P'");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    public ArrayList<assets> getAssetsList() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
+                    "!= 'X'");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+    public ArrayList<assets> getBadEncode_assets() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets a\n" +
+                    "WHERE a.asset_id NOT IN (\n" +
+                    "    SELECT at.asset_id FROM asset_transactions at\n" +
+                    "    )\n" +
+                    "AND a.asset_id NOT IN (\n" +
+                    "    SELECT da.asset_id FROM donated_assets da\n" +
+                    "    );");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -223,8 +390,86 @@ public class assets {
         return hoaList;
     }
 
+    public ArrayList<assets> getForDisposal(){
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
+                    "= 'S'");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    public assets getAssetInfo(int asset_id) {
+        assets asset = new assets();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets WHERE asset_id = ?");
+            stmt.setInt(1, asset_id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                asset.setAsset_description(rs.getString("asset_description"));
+                asset.setAcquisition_date(rs.getString("acquisition_date"));
+                asset.setStatus(rs.getString("status").charAt(0));
+                asset.setLoc_lattitude(rs.getDouble("loc_lattitude"));
+                asset.setLoc_longiture(rs.getDouble("loc_longiture"));
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
+                asset.setForrent(rs.getInt("forrent"));
+                asset.setAsset_value(rs.getDouble("asset_value"));
+                asset.setType_asset(rs.getString("type_asset").charAt(0));
+                asset.setHoa_name(rs.getString("hoa_name"));
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return asset;
+    }
+
     public int getEnclosing_asset() {
         return enclosing_asset;
+    }
+    public String getEnclosing_assetName() {
+        String asset_name = "";
+        if (enclosing_asset == -1 || enclosing_asset == 0)
+            return "None";
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_name FROM assets WHERE asset_id = ?");
+            stmt.setInt(1, enclosing_asset);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                asset_name = rs.getString("asset_name");
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return asset_name;
     }
 
     public void setEnclosing_asset(int enclosing_asset) {

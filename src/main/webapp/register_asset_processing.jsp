@@ -58,8 +58,7 @@
             String v_asset_name = request.getParameter("asset_name");
             String v_asset_description = request.getParameter("asset_description");
             String v_acquisition_date = request.getParameter("acquisition_date");
-            int v_forrent = request.getParameter("for_rent") != null ?
-                    Integer.parseInt(request.getParameter("for_rent")) : 0;
+            int v_forrent = 0;
             double v_asset_value = Double.parseDouble(request.getParameter("asset_value"));
             char v_asset_type = request.getParameter("asset_type").charAt(0);
             char v_asset_status = request.getParameter("asset_status").charAt(0);
