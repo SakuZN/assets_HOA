@@ -93,7 +93,7 @@
             <input type="text" id="asset_id" name="asset_id"
                    value="<%=asset.getAsset_id()%>" readonly>
         </label><br>
-        <%if (asset.getEnclosing_asset() != 0 && asset.getEnclosed_assets() != null) {%>
+        <%if (asset.getEnclosing_asset() != 0) {%>
             Enclosed From Asset:
             <label>
                 <input type="text" id="enclosed_assets" name="enclosed_assets"

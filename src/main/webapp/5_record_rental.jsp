@@ -66,16 +66,11 @@
 <body>
 
 <div>
-    <h3>Record Asset Rental Form</h3>
+    <h3>Choose Available Asset To Rent</h3>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
-    <jsp:useBean id="resident" class="com.example.assets_hoa.reference_resident" scope="session"/>
-    <jsp:useBean id="rental" class="com.example.assets_hoa.asset_rentals" scope="session"/>
-    <jsp:useBean id="transaction" class="com.example.assets_hoa.asset_transaction" scope="session"/>
     <jsp:useBean id="trans_officer" class="com.example.assets_hoa.reference_officer" scope="session"/>
     <%
         asset.clear();
-        rental.clear();
-        transaction.clear();
         // Get the list of assets rental info to update
         List<assets> assetsForRent = asset.getForRent();
         List<reference_officer> transOfcList = trans_officer.getTransOfc_list();
@@ -100,41 +95,14 @@
         }  else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
-    <form action="5_record_rental_processing.jsp">
+    <form action="5_record_chosen_rental.jsp">
         Asset To Rent:
         <label for="asset_id"></label>
         <select id="asset_id" name="asset_id">
             <%
-                for (assets a : asset.getForRent()) { %>
-            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
-            <% } %>
-        </select><br>
-        Renter ID:
-        <label for="resident_id"></label>
-        <select id="resident_id" name="resident_id">
-            <%
-                for (reference_resident r : resident.getRes_list()) { %>
-            <option value="<%=r.getResident_id()%>">ID:<%=r.getResident_id()%></option>
-            <% } %>
-        </select><br>
-        Reservation Date: <label for="reservation_date"></label>
-        <input type="date" id="reservation_date" name="reservation_date" value="<%=today%>" readonly>
-        <br>
-        Rental Date: <label for="rental_date"></label>
-        <input type="date" id="rental_date" name="rental_date" required>
-        <br>
-        Rental Status:
-        <label for="rental_status"></label>
-        <select id="rental_status" name="rental_status">
-            <option value="R">Reserved</option>
-        </select><br>
-        Transaction Officer ID:
-        <label for="trans_ofc"></label>
-        <select id="trans_ofc" name="trans_ofc">
-            <%
-                for (reference_officer rofc : trans_officer.getTransOfc_list()) { %>
-            <option value="<%=rofc.getHoa_id()%>|<%=rofc.getPosition()%>|<%=rofc.getElection_date()%>">
-                (ID:<%=rofc.getHoa_id()%>) <%=rofc.getPosition()%>
+                for (assets a : assetsForRent) { %>
+            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>)
+                <%=a.getAsset_name()%> | <%=a.getType_assetString()%>
             </option>
             <% } %>
         </select><br>

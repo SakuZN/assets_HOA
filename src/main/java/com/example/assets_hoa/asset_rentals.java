@@ -35,6 +35,11 @@ public class asset_rentals {
         return_date = "";
     }
 
+    /**
+     * Record a new asset rental information in the database
+     * Assets that are enclosed by another asset will automatically generate a rental record
+     * @return 1 if successful, 0 if not
+     */
     public int record_rental() {
         try {
             Connection conn = DB.getConnection();
@@ -141,6 +146,12 @@ public class asset_rentals {
         return 1;
     }
 
+    /**
+     * Update an existing asset rental record
+     * If the asset is enclosed by another asset, the enclosed assets will have some important fields updated
+     * If the update involves a return of the asset, it will be available for rental again and generate a new OR number
+     * @return 1 if successful, 0 if not
+     */
     public int update_rental() {
         try {
             Connection conn = DB.getConnection();
@@ -200,6 +211,7 @@ public class asset_rentals {
             check_transaction = check_transaction.getATInfo(getAsset_id(), getRental_date());
 
             List<assets> enclosed_assets = check_asset.freeEnclosed_asset(getRental_date());
+
             if (getStatus() == 'C' && check_asset.getType_asset() == 'P' && !enclosed_assets.isEmpty()) {
                 PreparedStatement stmt = conn.prepareStatement("UPDATE asset_rentals SET " +
                         "status = ? WHERE asset_id = ? AND rental_date = ?");
@@ -272,7 +284,13 @@ public class asset_rentals {
         return 1;
     }
 
-        public asset_rentals getARInfo(int asset_id, String rental_date) {
+    /**
+     * Get a specific info of an asset in asset_rentals table
+     * @param asset_id - asset_id identifier of the asset
+     * @param rental_date - rental_date identifier of the asset
+     * @return - asset_rentals object
+     */
+    public asset_rentals getARInfo(int asset_id, String rental_date) {
         asset_rentals ar = new asset_rentals();
         try {
             Connection conn = DB.getConnection();
@@ -469,7 +487,7 @@ public class asset_rentals {
             Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
                     "WHERE status IN ('R', 'N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
-                    "IS NULL)");
+                    "IS NULL) ORDER BY status DESC, asset_id ASC, rental_date ASC");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 asset_rentals ar = new asset_rentals();

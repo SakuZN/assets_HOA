@@ -38,6 +38,10 @@ public class assets {
         enclosing_asset = -1;
     }
 
+    /**
+     * Register asset to database
+     * @return 1 if successful, 0 if failed
+     */
     public int register_asset() {
         try {
             Connection conn = DB.getConnection();
@@ -72,6 +76,10 @@ public class assets {
         return 1;
     }
 
+    /**
+     * Update asset information in database
+     * @return 1 if successful, 0 if failed
+     */
     public int update_asset() {
         try {
             Connection conn = DB.getConnection();
@@ -103,6 +111,11 @@ public class assets {
         }
         return 1;
     }
+
+    /**
+     * Delete a badly registered asset from database
+     * @return 1 if successful, 0 if failed
+     */
     public int delete_asset() {
         try {
             // Check if asset is enclosing any other asset
@@ -127,6 +140,11 @@ public class assets {
         }
         return 1;
     }
+
+    /**
+     * Mark asset as disposed when it is eligible for disposal
+     * @return 1 if successful, 0 if failed
+     */
     public int dispose_asset() {
         try {
 
@@ -156,6 +174,11 @@ public class assets {
         return 1;
     }
 
+    /**
+     * Mark asset as rented
+     * @param asset_id Asset ID
+     * @return 1 if successful, 0 if failed
+     */
     public int assetRented(int asset_id) {
         try {
             Connection conn = DB.getConnection();
@@ -171,6 +194,12 @@ public class assets {
         }
         return 1;
     }
+
+    /**
+     * Mark asset as for rent again
+     * @param asset_id Asset ID
+     * @return 1 if successful, 0 if failed
+     */
     public int assetFree(int asset_id) {
         try {
             Connection conn = DB.getConnection();
@@ -186,6 +215,11 @@ public class assets {
         }
         return 1;
     }
+
+    /**
+     * When a certain condition happens, remove enclosing_asset from an asset
+     * @return 1 if successful, 0 if failed
+     */
     public int removeEnclosement() {
         try {
             Connection conn = DB.getConnection();
@@ -202,6 +236,10 @@ public class assets {
         return 1;
     }
 
+    /**
+     * Get the next available asset ID
+     * @return 1 if successful, 0 if failed
+     */
     public int generateAssetID() {
         int newID = 0;
         try {
@@ -273,6 +311,10 @@ public class assets {
     public char getType_asset() {
         return type_asset;
     }
+    /**
+     * Get the type of asset in String
+     * @return String of asset type
+     */
     public String getType_assetString() {
         switch (type_asset) {
             case 'P':
@@ -295,6 +337,11 @@ public class assets {
     public char getStatus() {
         return status;
     }
+
+    /**
+     * Get the status of asset in String
+     * @return String of asset status
+     */
     public String getStatusString() {
         switch (status) {
             case 'W':
@@ -311,6 +358,11 @@ public class assets {
                 return "Unknown";
         }
     }
+
+    /**
+     * Get the status of asset in String
+     * @return String of asset status
+     */
     public List<String> getStatusList() {
         List<String> statusList = new ArrayList<>();
         statusList.add("Working");
@@ -320,6 +372,11 @@ public class assets {
         statusList.add("Disposed");
         return statusList;
     }
+
+    /**
+     * Get the status of asset in char
+     * @return char of asset status
+     */
     public char getStatusChar(String status) {
         switch (status) {
             case "Working":
@@ -365,6 +422,10 @@ public class assets {
         this.hoa_name = hoa_name;
     }
 
+    /**
+     * Get the list of assets that enclose other assets, in other words, are properties
+     * @return ArrayList of assets that are of type property
+     */
     public ArrayList<assets> getPropertyAssetsList() {
         this.assetsList.clear();
         try {
@@ -389,7 +450,11 @@ public class assets {
         return assetsList;
     }
 
-    public ArrayList<assets> getAssetsList() {
+    /**
+     * Get the list of assets that are available to be updated
+     * @return ArrayList of assets that are available to be updated
+     */
+    public ArrayList<assets> getAssetsForUpdateList() {
         assetsList.clear();
         try {
             Connection conn = DB.getConnection();
@@ -412,6 +477,11 @@ public class assets {
         }
         return assetsList;
     }
+
+    /**
+     * Get the list of assets that are supposedly badly encoded in the database
+     * @return ArrayList of assets that are supposedly badly encoded in the database
+     */
     public ArrayList<assets> getBadEncode_assets() {
         assetsList.clear();
         try {
@@ -442,6 +512,10 @@ public class assets {
         return assetsList;
     }
 
+    /**
+     * Get the list of HOA in the database
+     * @return ArrayList of HOA in the database
+     */
     public ArrayList<reference_hoa> getHoaList() {
         this.hoaList.clear();
         try {
@@ -462,6 +536,10 @@ public class assets {
         return hoaList;
     }
 
+    /**
+     * Get the list of assets that are tagged for disposal
+     * @return ArrayList of assets that are tagged for disposal
+     */
     public ArrayList<assets> getForDisposal(){
         assetsList.clear();
         try {
@@ -485,18 +563,24 @@ public class assets {
         }
         return assetsList;
     }
+
+    /**
+     * Get the list of assets that are tagged for rent and are not enclosed by another asset
+     * @return ArrayList of assets that are tagged for rent and are not enclosed by another asset
+     */
     public List<assets> getForRent(){
         assetsList.clear();
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset FROM assets WHERE status " +
+                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL AND type_asset IN ('P', 'E', 'F', 'O')");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
                 asset.setAsset_id(rs.getInt("asset_id"));
                 asset.setAsset_name(rs.getString("asset_name"));
+                asset.setType_asset(rs.getString("type_asset").charAt(0));
                 assetsList.add(asset);
             }
             conn.close();
@@ -509,6 +593,11 @@ public class assets {
         return assetsList;
     }
 
+    /**
+     * Get the information of an asset from the database
+     * @param asset_id the id of the asset
+     * @return the asset object
+     */
     public assets getAssetInfo(int asset_id) {
         assets asset = new assets();
         try {
@@ -544,6 +633,11 @@ public class assets {
     public int getEnclosing_asset() {
         return enclosing_asset;
     }
+
+    /**
+     * Get the name of the asset that encloses this asset
+     * @return the name of the asset that encloses this asset
+     */
     public String getEnclosing_assetName() {
         String asset_name = "";
         if (enclosing_asset == -1 || enclosing_asset == 0)
@@ -567,6 +661,10 @@ public class assets {
         return asset_name;
     }
 
+    /**
+     * Get the list of assets that the enclosing asset contains
+     * @return ArrayList of assets that the enclosing asset contains
+     */
     public List<assets> getEnclosed_assets() {
         assetsList.clear();
         try {
@@ -591,7 +689,12 @@ public class assets {
         }
         return assetsList;
     }
-    public List<assets> getAssetForEnclosementRemoval() {
+
+    /**
+     * Helper method to get the list of assets that are enclosed by the asset that is being removed
+     * @return ArrayList of assets that are enclosed by the asset that is being removed
+     */
+    private List<assets> getAssetForEnclosementRemoval() {
         assetsList.clear();
         try {
             Connection conn = DB.getConnection();
@@ -617,7 +720,9 @@ public class assets {
     }
 
     /**
-     * This method returns a list of assets that are enclosed by the current asset and are forrent on the specified date
+     * Get the list of assets that are enclosed by the asset that is being removed
+     * @param transaction_date
+     * @return
      */
     public List<assets> freeEnclosed_asset(String transaction_date) {
         assetsList.clear();
@@ -650,6 +755,9 @@ public class assets {
         this.enclosing_asset = enclosing_asset;
     }
 
+    /**
+     * This Method clears all the fields of the asset object
+     */
     public void clear() {
         asset_id = 0;
         asset_name = "";

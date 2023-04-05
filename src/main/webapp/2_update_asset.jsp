@@ -71,7 +71,7 @@
     <%
         asset.clear();
         // Get the list of assets for disposal
-        List<assets> assetsForUpdate = asset.getAssetsList();
+        List<assets> assetsForUpdate = asset.getAssetsForUpdateList();
         // Check if the list is empty
         if (assetsForUpdate.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
