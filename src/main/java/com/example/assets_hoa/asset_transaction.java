@@ -187,6 +187,31 @@ public class asset_transaction {
         return 1;
     }
 
+    public void generateNewOR() {
+        reference_ornumber ro = new reference_ornumber();
+        setOrnum(ro.generateNewORNumber());
+    }
+
+    public int setNewOR(int asset_id, String transaction_date, int new_ornum) {
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement ps = conn.prepareStatement("UPDATE asset_transactions SET ornum = ? WHERE asset_id = ? AND " +
+                    "transaction_date = ? AND transaction_type = 'R' AND isdeleted = 0");
+            ps.setInt(1, new_ornum);
+            ps.setInt(2, asset_id);
+            ps.setString(3, transaction_date);
+            ps.executeUpdate();
+
+            conn.close();
+            ps.close();
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return 1;
+    }
+
     public int getAsset_id() {
         return asset_id;
     }

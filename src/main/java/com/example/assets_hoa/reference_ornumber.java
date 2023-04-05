@@ -17,8 +17,16 @@ public class reference_ornumber {
             PreparedStatement ps = conn.prepareStatement("SELECT MAX(ornum) + 1 FROM ref_ornumbers");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                ornum = rs.getInt("MAX(ornum)");
+                ornum = rs.getInt("MAX(ornum) + 1");
             }
+            ps.close();
+
+            ps = conn.prepareStatement("INSERT INTO ref_ornumbers (ornum) VALUES (?)");
+            ps.setInt(1, ornum);
+            ps.executeUpdate();
+            ps.close();
+
+            conn.close();
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
