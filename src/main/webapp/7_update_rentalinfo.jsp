@@ -95,7 +95,7 @@
                     assets a = asset.getAssetInfo(ar.getAsset_id());
             %>
             <option value="<%=a.getAsset_id()%>|<%=ar.getRental_date()%>">
-                <%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%> | <%=ar.getStatusString()%>)
+                (ID:<%=a.getAsset_id()%> <%=a.getAsset_name()%> | <%=ar.getStatusString()%>)
                 (Rental Date: <%=ar.getRental_date()%>)
             </option>
             <% } %>

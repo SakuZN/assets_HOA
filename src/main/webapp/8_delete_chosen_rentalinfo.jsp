@@ -132,7 +132,7 @@
         <br>
         Accepting Officer: <label for="accepting_officer"></label>
         <input type="text" id="accepting_officer" name="accepting_officer"
-               value="<%=rental.getAccept_position()%> (ID: <%= rental.getAccept_hoid()%>)" readonly>
+               value=" (ID: <%= rental.getAccept_hoid()%>) <%=rental.getAccept_position()%>" readonly>
         Return Date:
         <label for="return_date"></label>
         <input type="date" id="return_date"
@@ -141,7 +141,7 @@
         <br>
         Transaction Officer: <label for="transaction_officer"></label>
         <input type="text" id="transaction_officer" name="transaction_officer"
-               value="<%=transaction.getTrans_position()%> (ID: <%= transaction.getTrans_hoid()%>)" readonly>
+               value=" (ID: <%= transaction.getTrans_hoid()%>) <%=transaction.getTrans_position()%>" readonly>
         <br>
         OR Number: <label for="or_number"></label>
         <input type="text" id="or_number" name="or_number" value="<%=transaction.getOrnum()%>" readonly>
@@ -158,7 +158,7 @@
             <%
                 for (reference_officer rofc : approving_officers) { %>
             <option value="<%=rofc.getHoa_id()%>|<%=rofc.getPosition()%>|<%=rofc.getElection_date()%>">
-                <%=rofc.getPosition()%> (ID:<%=rofc.getHoa_id()%>)
+                (ID:<%=rofc.getHoa_id()%>) <%=rofc.getPosition()%>
             </option>
             <% } %>
         </select><br>

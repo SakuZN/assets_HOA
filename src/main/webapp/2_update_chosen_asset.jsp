@@ -101,10 +101,20 @@
         Asset Value: <label for="asset_value"></label>
         <input type="number" id="asset_value" name="asset_value" value="<%=asset.getAsset_value()%>" required><br>
         Asset Type:
+        <% if (Objects.equals(asset.getType_assetString(), "Unknown")) {%>
+        <label for="asset_type"></label>
+        <select id="asset_type" name="asset_type">
+            <option value="P">Property</option>
+            <option value="E">Equipment</option>
+            <option value="F">F&F</option>
+            <option value="O">Other</option>
+        </select><br>
+        <% } else { %>
         <label for="asset_type"></label>
         <select id="asset_type" name="asset_type">
             <option value="<%=asset.getType_asset()%>"><%=asset.getType_assetString()%></option>
         </select><br>
+        <% } %>
         Asset Status:
         <label for="asset_status"></label>
         <select id="asset_status" name="asset_status">
@@ -126,14 +136,14 @@
         <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
         <% if (asset.getEnclosing_asset() != -1 && asset.getEnclosing_asset() != 0) {%>
             <option value="<%=asset.getEnclosing_asset()%>">
-                <%=asset.getEnclosing_assetName()%> (ID:<%=asset.getEnclosing_asset()%>)</option>
+                (ID:<%=asset.getEnclosing_asset()%>) <%=asset.getEnclosing_assetName()%></option>
         <% } %>
         <option value="-1">None</option>
             <%
                     for (assets a : asset.getPropertyAssetsList()) {
                         if (a.getAsset_id() != asset.getAsset_id() && a.getAsset_id() != asset.getEnclosing_asset()) {
             %>
-        <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
+        <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
             <% } } %>
         </select><br>
         <input type="submit" value="Update">

@@ -127,7 +127,7 @@
             <%
                 for (reference_officer rofc : accepting_ofc_list) { %>
             <option value="<%=rofc.getHoa_id()%>|<%=rofc.getPosition()%>|<%=rofc.getElection_date()%>">
-                <%=rofc.getPosition()%> (ID:<%=rofc.getHoa_id()%>)
+                (ID:<%=rofc.getHoa_id()%>) <%=rofc.getPosition()%>
             </option>
             <% } %>
         </select><br>

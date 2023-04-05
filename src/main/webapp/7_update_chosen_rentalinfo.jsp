@@ -93,7 +93,13 @@
             <input type="text" id="asset_id" name="asset_id"
                    value="<%=asset.getAsset_id()%>" readonly>
         </label><br>
-
+        <%if (asset.getEnclosing_asset() != 0 && asset.getEnclosed_assets() != null) {%>
+            Enclosed From Asset:
+            <label>
+                <input type="text" id="enclosed_assets" name="enclosed_assets"
+                       value="(ID: <%=asset.getEnclosing_asset()%>) <%=asset.getEnclosing_assetName()%>" readonly>
+            </label><br>
+        <% } %>
         Rental Date:
         <label for="rental_date"></label>
         <input type="date" id="rental_date"
@@ -124,7 +130,7 @@
 
         Rental Status:
         <label for="rental_status"></label>
-        <% if (assetStatus == 'R') { %>
+        <% if (assetStatus == 'R' && (asset.getEnclosing_asset() == 0 && asset.getEnclosed_assets() != null)) { %>
             <select id="rental_status" name="rental_status">
                 <option value="<%=rental.getStatus()%>"><%=rental.getStatusString()%></option>
                 <%
@@ -158,7 +164,7 @@
 
         Accepting Officer: <label for="accepting_officer"></label>
         <input type="text" id="accepting_officer" name="accepting_officer"
-               value="<%=rental.getAccept_position()%> (ID: <%= rental.getAccept_hoid()%>)" readonly>
+               value=" (ID: <%= rental.getAccept_hoid()%>) <%=rental.getAccept_position()%>" readonly>
 
         Return Date:
         <label for="return_date"></label>

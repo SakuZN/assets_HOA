@@ -64,6 +64,7 @@
             double v_loc_lat = Double.parseDouble(request.getParameter("location_latitude"));
             double v_loc_long = Double.parseDouble(request.getParameter("location_longitude"));
             int v_enclosing_id = Integer.parseInt(request.getParameter("enclosing_asset"));
+            char v_asset_type = request.getParameter("asset_type").charAt(0);
             asset = asset.getAssetInfo(v_asset_id);
             asset.setAsset_description(v_asset_description);
             asset.setForrent(v_forrent);
@@ -72,6 +73,7 @@
             asset.setLoc_lattitude(v_loc_lat);
             asset.setLoc_longiture(v_loc_long);
             asset.setEnclosing_asset(v_enclosing_id);
+            asset.setType_asset(v_asset_type);
 
             if (asset.update_asset() == 1) {
         %>

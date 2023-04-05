@@ -90,7 +90,7 @@
         <select id="asset_id" name="asset_id">
             <%
                 for (assets a : assetsForUpdate) { %>
-            <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
+            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
             <% } %>
         </select><br>
         <input type="submit" value="Check Asset Information">

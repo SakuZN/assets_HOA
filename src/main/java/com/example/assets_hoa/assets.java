@@ -77,7 +77,9 @@ public class assets {
             Connection conn = DB.getConnection();
             PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET " +
                     "asset_description = ?, forrent = ?, asset_value = ?, " +
-                    "status = ?, loc_lattitude = ?, loc_longiture = ?, enclosing_asset = ? WHERE asset_id = ?");
+                    "status = ?, loc_lattitude = ?, loc_longiture = ?, " +
+                    "enclosing_asset = ?, type_asset = ? WHERE " +
+                    "asset_id = ?");
             stmt.setString(1,   getAsset_description());
             stmt.setInt(2,      getForrent());
             stmt.setDouble(3,   getAsset_value());
@@ -89,7 +91,8 @@ public class assets {
             } else {
                 stmt.setNull(7, java.sql.Types.INTEGER);
             }
-            stmt.setInt(8,     getAsset_id());
+            stmt.setString(8,   String.valueOf(getType_asset()));
+            stmt.setInt(9,     getAsset_id());
             stmt.executeUpdate();
             conn.close();
             stmt.close();
@@ -142,7 +145,7 @@ public class assets {
                 for (assets asset : checkEnclosing)
                     asset.removeEnclosement();
 
-
+            removeEnclosement();
             conn.close();
             stmt.close();
         }
@@ -392,7 +395,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "!= 'X'");
+                    "!= 'X' AND forrent = 1");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -420,7 +423,8 @@ public class assets {
                     "    )\n" +
                     "AND a.asset_id NOT IN (\n" +
                     "    SELECT da.asset_id FROM donated_assets da\n" +
-                    "    );");
+                    "    )" +
+                    "AND forrent = 1;");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -487,7 +491,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "NOT IN ('X', 'S') AND forrent = 1");
+                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -569,7 +573,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND forrent = 1");
+                    "WHERE enclosing_asset = ? AND forrent = 1 AND status NOT IN ('X', 'S', 'P')");
             stmt.setInt(1, getAsset_id());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -593,7 +597,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ?");
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P')");
             stmt.setInt(1, getAsset_id());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -622,7 +626,7 @@ public class assets {
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
                     "WHERE enclosing_asset = ? AND forrent = 0 AND asset_id IN (SELECT asset_id FROM " +
-                    "asset_transactions WHERE transaction_date = ?) ");
+                    "asset_transactions WHERE transaction_date = ?) AND status NOT IN ('X', 'S', 'P') ");
             stmt.setInt(1, getAsset_id());
             stmt.setString(2, transaction_date);
             ResultSet rs = stmt.executeQuery();

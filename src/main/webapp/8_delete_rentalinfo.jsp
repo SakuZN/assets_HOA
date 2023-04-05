@@ -107,8 +107,8 @@
                     assets a = asset.getAssetInfo(at.getAsset_id());
             %>
             <option value="<%=a.getAsset_id()%>|<%=at.getTransaction_date()%>">
-                <%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)
-                (Transaction Date: <%=at.getTransaction_date()%>)
+                (ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%>
+                 (Transaction Date: <%=at.getTransaction_date()%>)
             </option>
             <% } %>
         </select><br>

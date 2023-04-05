@@ -116,7 +116,8 @@
                step = "0.0001" pattern="\d{1,7}\.\d{1,4}" value="<%=asset.getLoc_longiture()%>" readonly><br>
         Enclosing Asset:
         <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
-        <option value="<%=asset.getEnclosing_asset()%>"><%=asset.getEnclosing_assetName()%></option>
+        <option value="<%=asset.getEnclosing_asset()%>">(ID:<%=asset.getEnclosing_asset()
+        %>)<%=asset.getEnclosing_assetName()%></option>
         </select><br>
         <input type="submit" value="Delete">
     </form>

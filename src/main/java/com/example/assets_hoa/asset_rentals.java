@@ -454,7 +454,10 @@ public class asset_rentals {
         ar_list.clear();
         try {
             Connection conn = DB.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals");
+            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
+                    "WHERE status IN ('R', 'N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
+                    "IS NULL)" + " OR asset_id IN " + "(SELECT asset_id FROM assets WHERE " + "enclosing_asset " +
+                    "IS " + "NOT NULL AND asset_id IN (SELECT asset_id FROM asset_rentals WHERE status IN ('N')))");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 asset_rentals ar = new asset_rentals();
@@ -474,7 +477,8 @@ public class asset_rentals {
         ar_list.clear();
         try {
             Connection conn = DB.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date FROM asset_rentals WHERE status = 'O'");
+            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date FROM asset_rentals WHERE status = 'O'" +
+                    " AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset IS NULL)");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 asset_rentals ar = new asset_rentals();

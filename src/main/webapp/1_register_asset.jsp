@@ -96,11 +96,11 @@
                 <option value="W">Working</option>
             </select><br>
             Location Latitude: <label for="location_latitude"></label>
-            <input type="number" id="location_latitude" name="location_latitude"
-                   step = "0.0001" pattern="\d{1,7}\.\d{1,4}" required><br>
+            <input type="text" id="location_latitude" name="location_latitude"
+                   pattern="^\d{0,3}(\.\d{0,4})?$" required><br>
             Location Longitude: <label for="location_longitude"></label>
-            <input type="number" id="location_longitude" name="location_longitude"
-                   step = "0.0001" pattern="\d{1,7}\.\d{1,4}" required><br>
+            <input type="text" id="location_longitude" name="location_longitude"
+                   pattern="^\d{0,3}(\.\d{0,4})?$" required><br>
             HOA Name:
             <label for="hoa_name"></label><select id="hoa_name" name="hoa_name">
                 <%

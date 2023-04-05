@@ -106,7 +106,7 @@
         <select id="asset_id" name="asset_id">
             <%
                 for (assets a : asset.getForRent()) { %>
-            <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
+            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
             <% } %>
         </select><br>
         Renter ID:
@@ -134,7 +134,7 @@
             <%
                 for (reference_officer rofc : trans_officer.getTransOfc_list()) { %>
             <option value="<%=rofc.getHoa_id()%>|<%=rofc.getPosition()%>|<%=rofc.getElection_date()%>">
-                <%=rofc.getPosition()%> (ID:<%=rofc.getHoa_id()%>)
+                (ID:<%=rofc.getHoa_id()%>) <%=rofc.getPosition()%>
             </option>
             <% } %>
         </select><br>
