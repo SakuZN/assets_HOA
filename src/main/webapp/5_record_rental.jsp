@@ -78,17 +78,26 @@
         transaction.clear();
         // Get the list of assets rental info to update
         List<assets> assetsForRent = asset.getForRent();
+        List<reference_officer> transOfcList = trans_officer.getTransOfc_list();
         LocalDate today = LocalDate.now();
-        // Check if the list is empty
+        // Check if assets list is empty
         if (assetsForRent.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
     %>
-    <p>No Available Items To Rent!.</p>
-    <form action ="index.jsp">
-    <input type="submit" value="Go Back To Main Menu">
-    </form>
+        <p>No Available Items To Rent!.</p>
+        <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+        </form>
     <%
-    } else {
+    } else if (transOfcList.isEmpty()) {
+            // Check if no transaction officer is available
+    %>
+        <p>No Available Transaction Officer Today!</p>
+        <form action ="index.jsp">
+            <input type="submit" value="Go Back To Main Menu">
+        </form>
+    <%
+        }  else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
     <form action="5_record_rental_processing.jsp">

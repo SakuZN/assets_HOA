@@ -2,6 +2,8 @@ package com.example.assets_hoa;
 
 import java.sql.*;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
 
 public class reference_officer {
 
@@ -41,7 +43,8 @@ public class reference_officer {
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position NOT IN ('Secretary', 'Treasurer')");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position " +
+                    "NOT IN ('Secretary', 'Treasurer') AND " + dayToday() + " = 1");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reference_officer ofc = new reference_officer();
@@ -60,8 +63,8 @@ public class reference_officer {
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position IN ('Secretary', " +
-                    "'Treasurer')");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position " +
+                    "IN ('Secretary', 'Treasurer') AND " + dayToday() + " = 1");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reference_officer ofc = new reference_officer();
@@ -80,8 +83,8 @@ public class reference_officer {
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position IN ('President', " +
-                    "'Vice-President')");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer WHERE position " +
+                    "IN ('President', 'Vice-President') AND " + dayToday() + " = 1");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reference_officer ofc = new reference_officer();
@@ -144,5 +147,27 @@ public class reference_officer {
         hoa_id = 0;
         position = "";
         election_date = "";
+    }
+
+    private String dayToday() {
+        LocalDate today = LocalDate.now();
+        DayOfWeek day = today.getDayOfWeek();
+        switch (day) {
+            case MONDAY:
+                return "M";
+            case TUESDAY:
+                return "T";
+            case WEDNESDAY:
+                return "W";
+            case THURSDAY:
+                return "H";
+            case FRIDAY:
+                return "F";
+            case SATURDAY:
+                return "S";
+            case SUNDAY:
+                return "N";
+        }
+        return "";
     }
 }

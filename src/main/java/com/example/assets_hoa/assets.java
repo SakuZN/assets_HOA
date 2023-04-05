@@ -118,7 +118,8 @@ public class assets {
     public int dispose_asset() {
         try {
             Connection conn = DB.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET status = 'X' WHERE asset_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET status = 'X' AND forrent = 0 WHERE " +
+                    "asset_id = ?");
             stmt.setInt(1,     getAsset_id());
             stmt.executeUpdate();
             conn.close();

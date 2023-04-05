@@ -70,23 +70,33 @@
     <jsp:useBean id="rental" class="com.example.assets_hoa.asset_rentals" scope="session"/>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
     <jsp:useBean id="transaction" class="com.example.assets_hoa.asset_transaction" scope="session"/>
+    <jsp:useBean id="approve_ofc" class="com.example.assets_hoa.reference_officer" scope="session"/>
     <%
         rental.clear();
         asset.clear();
         transaction.clear();
+        approve_ofc.clear();
         // Get the list of assets rental info to update
         List<asset_transaction> transToDelete = transaction.getATList();
+        List<reference_officer> approveOfcList = approve_ofc.getApprovingOfc_list();
         // Check if the list is empty
         if (transToDelete.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
     %>
-    <p>No Such Rental Records to Delete.</p>
+    <p>No Available Transaction Form to Delete!.</p>
     <form action ="index.jsp">
         <input type="submit" value="Go Back To Main Menu">
     </form>
     <%
-    } else {
-        // If the list is not empty, show the dropbox and enable the submit button
+    } else if (approveOfcList.isEmpty()) {
+        // Check if no approving officer is available
+    %>
+    <p>No Available Approving Officer Today!</p>
+    <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+    </form>
+    <%
+    }  else {
     %>
     <form action="8_delete_chosen_rentalinfo.jsp">
         Rental Info to Update

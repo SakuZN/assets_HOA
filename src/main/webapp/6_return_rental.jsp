@@ -69,21 +69,32 @@
     <h3>Return Rented Asset Form</h3>
     <jsp:useBean id="rental" class="com.example.assets_hoa.asset_rentals" scope="session"/>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
+    <jsp:useBean id="accept_ofc" class="com.example.assets_hoa.reference_officer" scope="session"/>
     <%
         rental.clear();
         asset.clear();
+        accept_ofc.clear();
         // Get the list of assets rental info to update
         List<asset_rentals> rentalsForReturn = rental.assetsOnRentList();
+        List<reference_officer> acceptOfcList = accept_ofc.getAcceptOfc_list();
         // Check if the list is empty
         if (rentalsForReturn.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
     %>
-    <p>No Assets Are Currently Rented.</p>
+    <p>No Available Assets to Return!.</p>
     <form action ="index.jsp">
         <input type="submit" value="Go Back To Main Menu">
     </form>
     <%
-    } else {
+    } else if (acceptOfcList.isEmpty()) {
+        // Check if no accepting officer is available
+    %>
+    <p>No Available Accepting Officer Today!</p>
+    <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+    </form>
+    <%
+    }  else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
     <form action="6_return_chosen_rental.jsp">
