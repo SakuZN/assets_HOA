@@ -117,7 +117,7 @@
         Enclosing Asset:
         <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
         <option value="<%=asset.getEnclosing_asset()%>">(ID:<%=asset.getEnclosing_asset()
-        %>)<%=asset.getEnclosing_assetName()%></option>
+        %>) <%=asset.getEnclosing_assetName()%></option>
         </select><br>
         <input type="submit" value="Delete">
     </form>
