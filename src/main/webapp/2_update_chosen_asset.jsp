@@ -32,13 +32,15 @@
             margin: 0;
         }
 
-        input[type=checkbox] {
+        input[type=checkbox][readonly] {
             margin: 8px 0;
             display: inline-block;
             border: 1px solid #ccc;
             height: 20px;
             width: 20px;
             vertical-align: middle;
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         input[type=submit] {
@@ -94,7 +96,7 @@
             boolean isChecked = asset.getForrent() == 1;
         %>
         For Rent: <label for="for_rent"></label>
-        <input type="checkbox" id="for_rent" name="for_rent" value="1" <%= isChecked ? "checked" : "" %>>
+        <input type="checkbox" id="for_rent" name="for_rent" value="1" <%= isChecked ? "checked" : "" %> readonly>
         <br>
         Asset Value: <label for="asset_value"></label>
         <input type="number" id="asset_value" name="asset_value" value="<%=asset.getAsset_value()%>" required><br>
@@ -109,7 +111,7 @@
             <option value="<%=asset.getStatus()%>"><%=asset.getStatusString()%></option>
             <%
                 for (String status : asset.getStatusList()) {
-                    if (!status.equals(asset.getStatusString())) {
+                    if (!status.equals(asset.getStatusString()) && !status.equals("Disposed")) {
             %>
             <option value="<%=asset.getStatusChar(status)%>"><%=status%></option>
             <% } } %>
@@ -129,7 +131,7 @@
         <option value="-1">None</option>
             <%
                     for (assets a : asset.getPropertyAssetsList()) {
-                        if (a.getAsset_id() != asset.getAsset_id()) {
+                        if (a.getAsset_id() != asset.getAsset_id() && a.getAsset_id() != asset.getEnclosing_asset()) {
             %>
         <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
             <% } } %>

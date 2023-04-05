@@ -74,7 +74,7 @@
             double v_discount_amount = Double.parseDouble(request.getParameter("discount_amount"));
             String v_inspection_details = request.getParameter("inspection_details");
             double v_assessed_value = Double.parseDouble(request.getParameter("assessed_value"));
-            String [] ofcInfo = request.getParameter("trans_ofc").split("\\|");
+            String [] ofcInfo = request.getParameter("accepting_ofc").split("\\|");
             int v_accept_id = Integer.parseInt(ofcInfo[0]);
             String v_accept_position = ofcInfo[1];
             String v_accept_election = ofcInfo[2];
@@ -107,6 +107,7 @@
             rental.setAccept_hoid(v_accept_id);
             rental.setAccept_position(v_accept_position);
             rental.setAccept_electiondate(v_accept_election);
+            rental.setReturn_date(v_return_date);
 
             if (isValidDate && rental.update_rental() == 1) {
         %>

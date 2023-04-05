@@ -64,7 +64,6 @@
             double v_loc_lat = Double.parseDouble(request.getParameter("location_latitude"));
             double v_loc_long = Double.parseDouble(request.getParameter("location_longitude"));
             int v_enclosing_id = Integer.parseInt(request.getParameter("enclosing_asset"));
-            System.out.println(v_enclosing_id);
             asset = asset.getAssetInfo(v_asset_id);
             asset.setAsset_description(v_asset_description);
             asset.setForrent(v_forrent);

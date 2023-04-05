@@ -78,6 +78,9 @@
             String v_inspection_details = request.getParameter("inspection_details");
             double v_assessed_value = Double.parseDouble(request.getParameter("assessed_value"));
 
+            if (v_inspection_details == null || v_inspection_details.equals("null")) {
+                v_inspection_details = "";
+            }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             boolean isValidDate = true;

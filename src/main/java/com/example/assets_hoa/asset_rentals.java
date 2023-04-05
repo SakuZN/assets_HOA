@@ -228,19 +228,28 @@ public class asset_rentals {
             else if (getStatus() == 'N' && check_asset.getType_asset() == 'P' && !enclosed_assets.isEmpty()) {
 
                 PreparedStatement stmt = conn.prepareStatement("UPDATE asset_rentals SET " +
-                        "status = ? WHERE asset_id = ? AND rental_date = ?");
+                        "status = ?, accept_hoid = ?, accept_position = ?, accept_electiondate = ?," +
+                        " return_date = ? WHERE asset_id = ? AND rental_date = ?");
 
                 for (assets ea : enclosed_assets) {
                     stmt.setString(1, String.valueOf('N'));
-                    stmt.setInt(2, ea.getAsset_id());
-                    stmt.setString(3, getRental_date());
+                    stmt.setInt(2, getAccept_hoid());
+                    stmt.setString(3, getAccept_position());
+                    stmt.setString(4, getAccept_electiondate());
+                    stmt.setString(5, getReturn_date());
+                    stmt.setInt(6, ea.getAsset_id());
+                    stmt.setString(7, getRental_date());
                     stmt.executeUpdate();
                     ea.assetFree(ea.getAsset_id());
                 }
                 stmt.close();
                 check_asset.assetFree(getAsset_id());
             }
-
+            //if its just any other asset
+            else {
+                if (getStatus() == 'C' || getStatus() == 'N')
+                    check_asset.assetFree(getAsset_id());
+            }
             conn.close();
 
         } catch (SQLException e) {

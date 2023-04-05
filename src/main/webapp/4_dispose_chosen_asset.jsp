@@ -70,6 +70,7 @@
     <form action="4_dispose_asset_processing.jsp">
         <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
         <%
+            asset.clear();
             int v_asset_id = Integer.parseInt(request.getParameter("asset_id"));
             asset = asset.getAssetInfo(v_asset_id);
         %>

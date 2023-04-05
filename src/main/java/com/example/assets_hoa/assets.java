@@ -102,6 +102,15 @@ public class assets {
     }
     public int delete_asset() {
         try {
+            // Check if asset is enclosing any other asset
+            //If so, remove the enclosing relationship
+            assets checkAsset = new assets();
+            checkAsset.setAsset_id(getAsset_id());
+            List<assets> checkEnclosing = checkAsset.getAssetForEnclosementRemoval();
+            if (!checkEnclosing.isEmpty())
+                for (assets asset : checkEnclosing)
+                    asset.removeEnclosement();
+
             Connection conn = DB.getConnection();
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM assets WHERE asset_id = ?");
             stmt.setInt(1,     getAsset_id());
@@ -117,11 +126,23 @@ public class assets {
     }
     public int dispose_asset() {
         try {
+
             Connection conn = DB.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET status = 'X' AND forrent = 0 WHERE " +
+            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET status = 'X', forrent = 0 WHERE " +
                     "asset_id = ?");
             stmt.setInt(1,     getAsset_id());
             stmt.executeUpdate();
+
+            // Check if asset is enclosing any other asset
+            //If so, remove the enclosing relationship before disposing
+            assets checkAsset = new assets();
+            checkAsset.setAsset_id(getAsset_id());
+            List<assets> checkEnclosing = checkAsset.getAssetForEnclosementRemoval();
+            if (!checkEnclosing.isEmpty())
+                for (assets asset : checkEnclosing)
+                    asset.removeEnclosement();
+
+
             conn.close();
             stmt.close();
         }
@@ -152,6 +173,21 @@ public class assets {
             Connection conn = DB.getConnection();
             PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET forrent = 1 WHERE asset_id = ?");
             stmt.setInt(1,     asset_id);
+            stmt.executeUpdate();
+            conn.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return 1;
+    }
+    public int removeEnclosement() {
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement stmt = conn.prepareStatement("UPDATE assets SET enclosing_asset = NULL WHERE asset_id = ?");
+            stmt.setInt(1,     this.asset_id);
             stmt.executeUpdate();
             conn.close();
             stmt.close();
@@ -332,7 +368,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE type_asset " +
-                    "= 'P'");
+                    "= 'P' AND status NOT IN ('X', 'S')");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -534,6 +570,30 @@ public class assets {
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
                     "WHERE enclosing_asset = ? AND forrent = 1");
+            stmt.setInt(1, getAsset_id());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+    public List<assets> getAssetForEnclosementRemoval() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
+                    "WHERE enclosing_asset = ?");
             stmt.setInt(1, getAsset_id());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
