@@ -77,6 +77,10 @@
         <label>
         <input type="text" name="asset_name" value="<%=asset.getAsset_name()%>" readonly>
         </label><br>
+        Asset ID:
+        <label>
+            <input type="text" name="asset_id" id="asset_id" value="<%=asset.getAsset_id()%>" readonly>
+        </label><br>
         Asset Description: <label for="asset_description"></label>
         <input type="text" id="asset_description" name="asset_description"
                value="<%=asset.getAsset_description()%>"required>
@@ -118,7 +122,11 @@
                step = "0.0001" pattern="\d{1,7}\.\d{1,4}" value="<%=asset.getLoc_longiture()%>" required><br>
         Enclosing Asset:
         <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
-        <option value="<%=asset.getEnclosing_asset()%>"><%=asset.getEnclosing_assetName()%></option>
+        <% if (asset.getEnclosing_asset() != -1 && asset.getEnclosing_asset() != 0) {%>
+            <option value="<%=asset.getEnclosing_asset()%>">
+                <%=asset.getEnclosing_assetName()%> (ID:<%=asset.getEnclosing_asset()%>)</option>
+        <% } %>
+        <option value="-1">None</option>
             <%
                     for (assets a : asset.getPropertyAssetsList()) {
                         if (a.getAsset_id() != asset.getAsset_id()) {

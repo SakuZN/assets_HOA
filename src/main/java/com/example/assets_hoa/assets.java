@@ -583,8 +583,7 @@ public class assets {
     }
 
     public void setEnclosing_asset(int enclosing_asset) {
-        if (enclosing_asset != -1)
-            this.enclosing_asset = enclosing_asset;
+        this.enclosing_asset = enclosing_asset;
     }
 
     public void clear() {
