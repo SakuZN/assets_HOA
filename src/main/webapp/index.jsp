@@ -34,14 +34,14 @@
 <h1><%= "Welcome, Officer!" %></h1>
 <br/>
 <ul class="menu">
-    <li><a href="register_asset.jsp">Register an Asset</a></li>
-    <li><a href="update_asset.jsp">Update Asset Information</a></li>
-    <li><a href="delete_wrongasset.jsp">Delete Wrongly Encoded Asset</a></li>
-    <li><a href="dispose_asset.jsp">Dispose an Asset</a></li>
-    <li><a href="record_rental.jsp">Record Asset Rental</a></li>
-    <li><a href="return_rental.jsp">Return Asset Rental</a></li>
-    <li><a href="update_rentalinfo.jsp">Update Asset Rental Information</a></li>
-    <li><a href="delete_rentalinfo.jsp">Delete Asset Rental Information</a></li>
+    <li><a href="1_register_asset.jsp">Register an Asset</a></li>
+    <li><a href="2_update_asset.jsp">Update Asset Information</a></li>
+    <li><a href="3_delete_wrongasset.jsp">Delete Wrongly Encoded Asset</a></li>
+    <li><a href="4_dispose_asset.jsp">Dispose an Asset</a></li>
+    <li><a href="5_record_rental.jsp">Record Asset Rental</a></li>
+    <li><a href="7_update_rentalinfo.jsp">Update Asset Rental Information</a></li>
+    <li><a href="6_return_rental.jsp">Return Asset Rental</a></li>
+    <li><a href="8_delete_rentalinfo.jsp">Delete Asset Rental Information</a></li>
 </ul>
 
 </body>

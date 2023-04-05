@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Delete Badly Encoded Asset</title>
+    <title>Return an Asset From Rent</title>
     <style>
         body {
             font-family: Arial, serif;
@@ -66,35 +66,45 @@
 <body>
 
 <div>
-    <h3>Delete Badly Encoded Asset Form</h3>
+    <h3>Return Rented Asset Form</h3>
+    <jsp:useBean id="rental" class="com.example.assets_hoa.asset_rentals" scope="session"/>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
     <%
-        // Get the list of assets for disposal
-        List<assets> assetsForDeletion = asset.getBadEncode_assets();
+        rental.clear();
+        asset.clear();
+        // Get the list of assets rental info to update
+        List<asset_rentals> rentalsForReturn = rental.assetsOnRentList();
         // Check if the list is empty
-        if (assetsForDeletion.isEmpty()) {
+        if (rentalsForReturn.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
     %>
-    <p>No Badly Encoded Assets to Delete.</p>
-    <input type="submit" value="Go Back Using Browser Back Button" disabled>
+    <p>No Assets Are Currently Rented.</p>
+    <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+    </form>
     <%
     } else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
-    <form action="delete_chosen_asset.jsp">
-        Asset:
+    <form action="6_return_chosen_rental.jsp">
+        Asset To Return:
         <label for="asset_id"></label>
         <select id="asset_id" name="asset_id">
             <%
-                for (assets a : assetsForDeletion) { %>
-            <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
+                for (asset_rentals ar : rentalsForReturn) {
+                    assets a = asset.getAssetInfo(ar.getAsset_id());
+            %>
+            <option value="<%=a.getAsset_id()%>|<%=ar.getRental_date()%>">
+                <%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)
+            </option>
             <% } %>
         </select><br>
-        <input type="submit" value="Verify Asset Information">
+        <input type="submit" value="Check Asset Rental Information">
     </form>
     <%
         }
     %>
 </div>
+
 </body>
 </html>

@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Update an Asset</title>
+    <title>Delete Badly Encoded Asset</title>
     <style>
         body {
             font-family: Arial, serif;
@@ -66,36 +66,38 @@
 <body>
 
 <div>
-    <h3>Update Asset Form</h3>
+    <h3>Delete Badly Encoded Asset Form</h3>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
     <%
+        asset.clear();
         // Get the list of assets for disposal
-        List<assets> assetsForUpdate = asset.getAssetsList();
+        List<assets> assetsForDeletion = asset.getBadEncode_assets();
         // Check if the list is empty
-        if (assetsForUpdate.isEmpty()) {
+        if (assetsForDeletion.isEmpty()) {
             // If the list is empty, show a message and disable the submit button
     %>
-    <p>No Such Assets to Update.</p>
-    <input type="submit" value="Go Back Using Browser Back Button" disabled>
+    <p>No Badly Encoded Assets to Delete.</p>
+    <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+    </form>
     <%
     } else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
-    <form action="update_chosen_asset.jsp">
+    <form action="3_delete_chosen_asset.jsp">
         Asset:
         <label for="asset_id"></label>
         <select id="asset_id" name="asset_id">
             <%
-                for (assets a : assetsForUpdate) { %>
+                for (assets a : assetsForDeletion) { %>
             <option value="<%=a.getAsset_id()%>"><%=a.getAsset_name()%> (ID:<%=a.getAsset_id()%>)</option>
             <% } %>
         </select><br>
-        <input type="submit" value="Check Asset Information">
+        <input type="submit" value="Verify Asset Information">
     </form>
     <%
         }
     %>
 </div>
-
 </body>
 </html>

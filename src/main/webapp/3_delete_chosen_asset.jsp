@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Checking Asset For Disposal</title>
+    <title>Delete an Asset</title>
     <style>
         body {
             font-family: Arial, serif;
@@ -66,8 +66,8 @@
 <body>
 
 <div>
-    <h3>Verify Asset Before Disposal</h3>
-    <form action="dispose_asset_processing.jsp">
+    <h3>Verify Asset Before Deleting</h3>
+    <form action="3_delete_wrongasset_processing.jsp">
         <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
         <%
             int v_asset_id = Integer.parseInt(request.getParameter("asset_id"));
@@ -117,8 +117,8 @@
         Enclosing Asset:
         <label for="enclosing_asset"></label><select id="enclosing_asset" name="enclosing_asset">
         <option value="<%=asset.getEnclosing_asset()%>"><%=asset.getEnclosing_assetName()%></option>
-    </select><br>
-        <input type="submit" value="Dispose">
+        </select><br>
+        <input type="submit" value="Delete">
     </form>
 </div>
 

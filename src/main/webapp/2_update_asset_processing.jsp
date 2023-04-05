@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Transfer Processing</title>
+    <title>Asset Information Update Processing</title>
     <style>
         body {
             font-family: Arial;
@@ -54,36 +54,30 @@
 <div>
     <form action="index.jsp">
         <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
-        <%  int v_asset_id = asset.generateAssetID();
-            String v_asset_name = request.getParameter("asset_name");
+        <%
             String v_asset_description = request.getParameter("asset_description");
-            String v_acquisition_date = request.getParameter("acquisition_date");
-            int v_forrent = 0;
+            int v_forrent = Objects.equals(request.getParameter("for_rent"), "1") ? 1 : 0;
             double v_asset_value = Double.parseDouble(request.getParameter("asset_value"));
-            char v_asset_type = request.getParameter("asset_type").charAt(0);
             char v_asset_status = request.getParameter("asset_status").charAt(0);
             double v_loc_lat = Double.parseDouble(request.getParameter("location_latitude"));
             double v_loc_long = Double.parseDouble(request.getParameter("location_longitude"));
-            String v_hoa_name = request.getParameter("hoa_name");
             int v_enclosing_id = Integer.parseInt(request.getParameter("enclosing_asset"));
-            asset.setAsset_id(v_asset_id);
-            asset.setAsset_name(v_asset_name);
+            if (v_enclosing_id == 0) {
+                v_enclosing_id = -1;
+            }
             asset.setAsset_description(v_asset_description);
-            asset.setAcquisition_date(v_acquisition_date);
             asset.setForrent(v_forrent);
             asset.setAsset_value(v_asset_value);
-            asset.setType_asset(v_asset_type);
             asset.setStatus(v_asset_status);
             asset.setLoc_lattitude(v_loc_lat);
             asset.setLoc_longiture(v_loc_long);
-            asset.setHoa_name(v_hoa_name);
             asset.setEnclosing_asset(v_enclosing_id);
 
-            if (asset.register_asset() == 1) {
+            if (asset.update_asset() == 1) {
         %>
-        <h1>Asset Registered Successfully!</h1>
+        <h1>Asset Updated Successfully!</h1>
         <% } else { %>
-        <h1>Asset Register Failed!</h1>
+        <h1>Asset Update Failed!</h1>
         <h2>Please try again</h2>
         <%}%>
 

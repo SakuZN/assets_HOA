@@ -69,6 +69,7 @@
     <h3>Dispose Asset Form</h3>
     <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
     <%
+        asset.clear();
         // Get the list of assets for disposal
         List<assets> assetsForDisposal = asset.getForDisposal();
         // Check if the list is empty
@@ -76,12 +77,14 @@
             // If the list is empty, show a message and disable the submit button
     %>
     <p>No Such Assets to Dispose of.</p>
-    <input type="submit" value="Go Back Using Browser Back Button" disabled>
+    <form action ="index.jsp">
+        <input type="submit" value="Go Back To Main Menu">
+    </form>
     <%
     } else {
         // If the list is not empty, show the dropbox and enable the submit button
     %>
-    <form action="dispose_chosen_asset.jsp">
+    <form action="4_dispose_chosen_asset.jsp">
         Asset:
         <label for="asset_id"></label>
         <select id="asset_id" name="asset_id">
