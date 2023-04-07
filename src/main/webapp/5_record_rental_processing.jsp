@@ -63,6 +63,12 @@
         <jsp:useBean id="transaction" class="com.example.assets_hoa.asset_transaction" scope="session"/>
         <jsp:useBean id="trans_officer" class="com.example.assets_hoa.reference_officer" scope="session"/>
         <%
+            asset.clear();
+            resident.clear();
+            rental.clear();
+            transaction.clear();
+            trans_officer.clear();
+
             int v_asset_id = Integer.parseInt(request.getParameter("asset_id"));
             int v_resident_id = Integer.parseInt(request.getParameter("resident_id"));
             String v_reservation_date = request.getParameter("reservation_date");
@@ -103,7 +109,10 @@
             transaction.setIsdeleted(0);
             transaction.setTransaction_type('R');
 
-            if (isValidDate && transaction.register_transaction() == 1 && rental.record_rental() == 1) {
+            resident.setResident_id(v_resident_id);
+
+            if (isValidDate && transaction.register_transaction() == 1 && rental.record_rental() == 1 &&
+                    resident.setResident_renting() == 1) {
         %>
         <h1>Asset Registered Successfully!</h1>
         <% } else { %>

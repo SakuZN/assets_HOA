@@ -116,7 +116,7 @@
         <label for="resident_id"></label>
         <select id="resident_id" name="resident_id">
             <%
-                for (reference_resident r : resident.getRes_list()) { %>
+                for (reference_resident r : resident.getRes_list_not_renters()) { %>
             <option value="<%=r.getResident_id()%>">ID:<%=r.getResident_id()%></option>
             <% } %>
         </select><br>

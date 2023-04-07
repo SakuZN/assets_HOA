@@ -63,6 +63,7 @@
         <jsp:useBean id="transaction" class="com.example.assets_hoa.asset_transaction" scope="session"/>
         <%
             asset.clear();
+            resident.clear();
             rental.clear();
             transaction.clear();
 
@@ -109,7 +110,9 @@
             rental.setAccept_electiondate(v_accept_election);
             rental.setReturn_date(v_return_date);
 
-            if (isValidDate && rental.update_rental() == 1) {
+            resident.setResident_id(rental.getResident_id());
+
+            if (isValidDate && rental.update_rental() == 1 && resident.setResident_not_renting() == 1) {
         %>
         <h1>Asset Rental Returned Successfully!</h1>
         <% } else { %>
