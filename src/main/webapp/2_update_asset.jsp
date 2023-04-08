@@ -89,8 +89,17 @@
         <label for="asset_id"></label>
         <select id="asset_id" name="asset_id">
             <%
-                for (assets a : assetsForUpdate) { %>
-            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
+                for (assets a : assetsForUpdate) {%>
+            <option value="<%=a.getAsset_id()%>">
+                (ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%> | <%=a.getType_assetString()%>
+            <%
+                if (a.getEnclosing_asset() != 0) {
+            %>
+                | Enclosed in ID: <%=a.getEnclosing_asset()%>
+            <%
+                }
+            %>
+            </option>
             <% } %>
         </select><br>
         <input type="submit" value="Check Asset Information">

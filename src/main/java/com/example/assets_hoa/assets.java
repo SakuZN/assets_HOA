@@ -460,14 +460,19 @@ public class assets {
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "!= 'X' AND asset_id NOT IN (SELECT asset_id FROM asset_rentals WHERE asset_rentals.status IN " +
-                    "('R','O'))");
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets " +
+                    "WHERE status " + "!= 'X' AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
+                    "WHERE asset_rentals.status IN " + "('R','O'))");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
                 asset.setAsset_id(rs.getInt("asset_id"));
                 asset.setAsset_name(rs.getString("asset_name"));
+                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
+                    asset.setType_asset(rs.getString("type_asset").charAt(0));
+                else
+                    asset.setType_asset(' ');
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
                 assetsList.add(asset);
             }
             conn.close();
