@@ -37,7 +37,8 @@ public class asset_transaction {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM asset_transactions WHERE transaction_type = " +
-                    "'R' AND isdeleted = 0");
+                    "'R' AND isdeleted = 0 AND asset_id NOT IN (SELECT asset_id FROM asset_rentals WHERE status IN " +
+                    "('R', 'O'))");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 asset_transaction at = new asset_transaction();

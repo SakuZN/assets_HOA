@@ -159,7 +159,7 @@
         <br>
 
         Rental Amount: <label for="rental_amount"></label>
-        <% if (assetStatus == 'R' || assetStatus == 'C') { %>
+        <% if (assetStatus != 'O') { %>
             <input type="number" id="rental_amount" name="rental_amount" value="<%=rental.getRental_amount()%>" readonly>
         <% } else { %>
             <input type="number" id="rental_amount" name="rental_amount" value="<%=rental.getRental_amount()%>" required>
@@ -167,15 +167,15 @@
         <br>
 
         Discount: <label for="discount_amount"></label>
-        <% if (assetStatus == 'O' || assetStatus == 'N') { %>
-            <input type="number" id="discount_amount" name="discount_amount" value="<%=rental.getDiscount()%>" required>
-        <% } else { %>
+        <% if (assetStatus != 'O') { %>
             <input type="number" id="discount_amount" name="discount_amount" value="<%=rental.getDiscount()%>" readonly>
+        <% } else { %>
+            <input type="number" id="discount_amount" name="discount_amount" value="<%=rental.getDiscount()%>" required>
         <% } %>
         <br>
 
         Inspection Details: <label for="inspection_details"></label>
-        <% if (assetStatus == 'R' || assetStatus == 'C' || assetStatus == 'O') { %>
+        <% if (assetStatus != 'N') { %>
             <input type="text" id="inspection_details" name="inspection_details" value="<%=rental.getInspection_details()%>" readonly>
         <% } else { %>
             <input type="text" id="inspection_details" name="inspection_details" value="<%=rental.getInspection_details()%>" required>
@@ -183,7 +183,7 @@
         <% } %>
 
         Assessed Value: <label for="assessed_value"></label>
-        <% if (assetStatus == 'R' || assetStatus == 'C') { %>
+        <% if (assetStatus != 'N') { %>
             <input type="number" id="assessed_value" name="assessed_value" value="<%=rental.getAssessed_value()%>" readonly>
         <% } else { %>
             <input type="number" id="assessed_value" name="assessed_value" value="<%=rental.getAssessed_value()%>" required>

@@ -484,7 +484,7 @@ public class asset_rentals {
         try {
             Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
-                    "WHERE status IN ('R', 'N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
+                    "WHERE status != 'C' AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
                     "IS NULL) ORDER BY status ASC, asset_id ASC, rental_date ASC");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -533,6 +533,26 @@ public class asset_rentals {
         }
         return ar_list;
     }
+
+    /*
+    public int isRentedEnclosed(int asset_id, String rental_date) {
+        int count = 0;
+        try{
+            String sql = "SELECT COUNT(asset_id) FROM asset_rentals WHERE resident_id = (SELECT resident_id FROM " +
+                    "asset_rentals WHERE asset_id = ? AND rental_date = ?) AND rental_date = ?";
+            Connection conn = DB.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count = rs.getInt("COUNT(asset_id)");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+            return 0;
+        }
+        return count;
+    }
+     */
     public void clear() {
         asset_id = 0;
         rental_date = "";

@@ -77,8 +77,7 @@
             Asset Description: <label for="asset_description"></label><input type="text" id="asset_description"
                                                                              name="asset_description" required><br>
             Acquisition Date: <label for="acquisition_date"></label>
-            <input type="date" id="acquisition_date" name="acquisition_date"
-                   value="<%=today%>" readonly><br>
+            <input type="date" id="acquisition_date" name="acquisition_date" required><br>
             <%--For Rent: <label for="for_rent"></label><input type="checkbox" id="for_rent" name="for_rent" value=
                 1><br>--%>
             Asset Value: <label for="asset_value"></label><input type="number" id="asset_value" name="asset_value" required><br>

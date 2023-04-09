@@ -101,8 +101,15 @@
         <select id="asset_id" name="asset_id">
             <%
                 for (assets a : assetsForRent) { %>
-            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>)
-                <%=a.getAsset_name()%> | <%=a.getType_assetString()%>
+            <option value="<%=a.getAsset_id()%>">
+                (ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%> | <%=a.getType_assetString()%>
+                <%
+                    if (a.getEnclosing_asset() != 0) {
+                %>
+                | Enclosed in ID: <%=a.getEnclosing_asset()%>
+                <%
+                    }
+                %>
             </option>
             <% } %>
         </select><br>

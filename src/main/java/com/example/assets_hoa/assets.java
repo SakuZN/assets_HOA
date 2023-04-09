@@ -572,22 +572,26 @@ public class assets {
     }
 
     /**
-     * Get the list of assets that are tagged for rent and are not enclosed by another asset
-     * @return ArrayList of assets that are tagged for rent and are not enclosed by another asset
+     * Get the list of assets that are tagged for rent
+     * @return ArrayList of assets that are tagged for rent
      */
     public List<assets> getForRent(){
         assetsList.clear();
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset FROM assets WHERE status " +
-                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL AND type_asset IN ('P', 'E', 'F', 'O')");
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets WHERE status " +
+                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
                 asset.setAsset_id(rs.getInt("asset_id"));
                 asset.setAsset_name(rs.getString("asset_name"));
-                asset.setType_asset(rs.getString("type_asset").charAt(0));
+                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
+                    asset.setType_asset(rs.getString("type_asset").charAt(0));
+                else
+                    asset.setType_asset(' ');
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
                 assetsList.add(asset);
             }
             conn.close();

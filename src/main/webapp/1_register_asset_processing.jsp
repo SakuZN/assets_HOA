@@ -7,6 +7,10 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.sql.*, java.util.*, com.example.assets_hoa.*"%>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.ParseException" %>
+<%@ page import="java.time.LocalDate" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,7 +58,10 @@
 <div>
     <form action="index.jsp">
         <jsp:useBean id="asset" class="com.example.assets_hoa.assets" scope="session"/>
-        <%  int v_asset_id = asset.generateAssetID();
+        <%
+            LocalDate today = LocalDate.now();
+
+            int v_asset_id = asset.generateAssetID();
             String v_asset_name = request.getParameter("asset_name");
             String v_asset_description = request.getParameter("asset_description");
             String v_acquisition_date = request.getParameter("acquisition_date");
@@ -79,11 +86,27 @@
             asset.setHoa_name(v_hoa_name);
             asset.setEnclosing_asset(v_enclosing_id);
 
-            if (asset.register_asset() == 1) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            boolean isValidDate = true;
+            Date acquisition_date = null;
+            Date today_date = null;
+            try {
+                acquisition_date = sdf.parse(v_acquisition_date);
+                today_date = sdf.parse(today.toString());
+            } catch (ParseException e) {
+                isValidDate = false;
+            }
+            assert acquisition_date != null;
+            if (acquisition_date.after(today_date)) {
+                isValidDate = false;
+            }
+
+            if (isValidDate && asset.register_asset() == 1) {
         %>
         <h1>Asset Registered Successfully!</h1>
         <% } else { %>
         <h1>Asset Register Failed!</h1>
+        <h2>Wrong value inputted in one of the fields!</h2>
         <h2>Please try again</h2>
         <%}%>
 

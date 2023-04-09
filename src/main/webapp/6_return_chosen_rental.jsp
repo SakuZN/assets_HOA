@@ -129,10 +129,10 @@
                name="return_date" required>
         <br>
         Rental Amount: <label for="rental_amount"></label>
-        <input type="number" id="rental_amount" name="rental_amount" required>
+        <input type="number" id="rental_amount" value="<%=rental.getRental_amount()%>" name="rental_amount" required>
         <br>
         Discount: <label for="discount_amount"></label>
-        <input type="number" id="discount_amount" name="discount_amount" required>
+        <input type="number" id="discount_amount" value="<%=rental.getDiscount()%>" name="discount_amount" required>
         <br>
         Inspection Details: <label for="inspection_details"></label>
         <input type="text" id="inspection_details" name="inspection_details" required>
