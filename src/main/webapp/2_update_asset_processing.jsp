@@ -59,7 +59,6 @@
             int v_asset_id = Integer.parseInt(request.getParameter("asset_id"));
             String v_asset_description = request.getParameter("asset_description");
             int v_forrent = Objects.equals(request.getParameter("for_rent"), "1") ? 1 : 0;
-            System.out.println(v_forrent);
             double v_asset_value = Double.parseDouble(request.getParameter("asset_value"));
             char v_asset_status = request.getParameter("asset_status").charAt(0);
             if (v_asset_status == 'P' || v_asset_status == 'S')
