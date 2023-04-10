@@ -80,7 +80,7 @@
             int v_asset_id = Integer.parseInt(values[0]);
             String v_rental_date = values[1];
 
-            rental = rental.getARInfo(v_asset_id, v_rental_date);
+            rental = rental.getRentalInfo(v_asset_id, v_rental_date);
             asset = asset.getAssetInfo(v_asset_id);
             List<reference_officer> accepting_ofc_list = accept_ofc.getAcceptOfc_list();
             // Get the list of enclosed assets, if any

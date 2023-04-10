@@ -103,7 +103,7 @@
             HOA Name:
             <label for="hoa_name"></label><select id="hoa_name" name="hoa_name">
                 <%
-                    for (reference_hoa a : asset.getHoaList()) { %>
+                    for (reference_hoa a : asset.getHoaNamesList()) { %>
                 <option value="<%=a.getHoa_name()%>"><%=a.getHoa_name()%></option>
                 <% } %>
             </select><br>

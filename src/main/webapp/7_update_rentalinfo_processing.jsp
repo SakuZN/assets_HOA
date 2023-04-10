@@ -100,7 +100,7 @@
                 }
             }
 
-            rental = rental.getARInfo(v_asset_id, v_rental_date);
+            rental = rental.getRentalInfo(v_asset_id, v_rental_date);
             rental.setStatus(v_rental_status);
             rental.setRental_date(v_rental_date);
             rental.setDiscount(v_discount_amount);

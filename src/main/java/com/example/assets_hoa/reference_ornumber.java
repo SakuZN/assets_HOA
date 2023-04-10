@@ -10,6 +10,11 @@ public class reference_ornumber {
         ornum = 0;
     }
 
+
+    /**
+     * Generate a new ORnumber, insert it to the ref_ORnum table, and return the new ORnumber
+     * @return New ORnumber
+     */
     public int generateNewORNumber() {
         try {
             Connection conn = DB.getConnection();

@@ -87,6 +87,8 @@ public class asset_rentals {
                 ps.setString(13, getReturn_date());
             ps.executeUpdate();
 
+            // Check if asset is enclosed by another asset
+            // If yes, generate a rental record for the enclosed asset
             assets check_asset = new assets();
             check_asset = check_asset.getAssetInfo(getAsset_id());
             List<assets> enclosed_assets = check_asset.getEnclosed_assets();
@@ -133,6 +135,7 @@ public class asset_rentals {
                     ea.assetRented(ea.getAsset_id());
                 }
 
+            // Update asset forrent to 1, rented
             check_asset.assetRented(getAsset_id());
 
             ps.close();
@@ -201,15 +204,17 @@ public class asset_rentals {
 
             ps.executeUpdate();
             ps.close();
-            //For cases if asset is a property, has enclosed assets and is being cancelled
+
+
+
             assets check_asset = new assets();
-            //To add OR number after rental is returned
             asset_transaction check_transaction = new asset_transaction();
             check_asset = check_asset.getAssetInfo(getAsset_id());
-            check_transaction = check_transaction.getATInfo(getAsset_id(), getRental_date());
+            check_transaction = check_transaction.getTransactInfo(getAsset_id(), getRental_date());
 
             List<assets> enclosed_assets = check_asset.getEnclosed_RentedAssets(getRental_date());
 
+            //For cases if asset is a property, has enclosed assets and is being cancelled
             if (getStatus() == 'C' && check_asset.getType_asset() == 'P' && !enclosed_assets.isEmpty()) {
                 PreparedStatement stmt = conn.prepareStatement("UPDATE asset_rentals SET " +
                         "status = ? WHERE asset_id = ? AND rental_date = ?");
@@ -288,7 +293,7 @@ public class asset_rentals {
      * @param rental_date - rental_date identifier of the asset
      * @return - asset_rentals object
      */
-    public asset_rentals getARInfo(int asset_id, String rental_date) {
+    public asset_rentals getRentalInfo(int asset_id, String rental_date) {
         asset_rentals ar = new asset_rentals();
         try {
             Connection conn = DB.getConnection();
@@ -321,6 +326,70 @@ public class asset_rentals {
         }
         return ar;
 
+    }
+
+    /**
+     * Get the list of assets rental information to be updated
+     * @return - list of asset_rentals objects
+     */
+    public List<asset_rentals> getRentalsToUpdate() {
+        ar_list.clear();
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
+                    "WHERE status != 'C' AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
+                    "IS NULL) ORDER BY status ASC, asset_id ASC, rental_date ASC");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                asset_rentals ar = new asset_rentals();
+                ar.setAsset_id(rs.getInt("asset_id"));
+                ar.setRental_date(rs.getString("rental_date"));
+                ar.setStatus(rs.getString("status").charAt(0));
+                ar_list.add(ar);
+            }
+            ps.close();
+            ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
+                    "WHERE status IN ('N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
+                    "IS NOT NULL)");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                asset_rentals ar = new asset_rentals();
+                ar.setAsset_id(rs.getInt("asset_id"));
+                ar.setRental_date(rs.getString("rental_date"));
+                ar.setStatus(rs.getString("status").charAt(0));
+                ar_list.add(ar);
+            }
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+        return ar_list;
+    }
+
+    /**
+     * Get the list of assets on rent
+     * @return - list of asset_rentals objects
+     */
+    public List<asset_rentals> assetsOnRentList() {
+        ar_list.clear();
+        try {
+            Connection conn = DB.getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date FROM asset_rentals WHERE status = 'O'" +
+                    " AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset IS NULL)");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                asset_rentals ar = new asset_rentals();
+                ar.setAsset_id(rs.getInt("asset_id"));
+                ar.setRental_date(rs.getString("rental_date"));
+                ar_list.add(ar);
+            }
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+        return ar_list;
     }
 
     public int getAsset_id() {
@@ -477,61 +546,6 @@ public class asset_rentals {
 
     public void setAr_list(List<asset_rentals> ar_list) {
         this.ar_list = ar_list;
-    }
-
-    public List<asset_rentals> getArListtoUpdate() {
-        ar_list.clear();
-        try {
-            Connection conn = DB.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
-                    "WHERE status != 'C' AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
-                    "IS NULL) ORDER BY status ASC, asset_id ASC, rental_date ASC");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                asset_rentals ar = new asset_rentals();
-                ar.setAsset_id(rs.getInt("asset_id"));
-                ar.setRental_date(rs.getString("rental_date"));
-                ar.setStatus(rs.getString("status").charAt(0));
-                ar_list.add(ar);
-            }
-            ps.close();
-            ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
-                    "WHERE status IN ('N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
-                    "IS NOT NULL)");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                asset_rentals ar = new asset_rentals();
-                ar.setAsset_id(rs.getInt("asset_id"));
-                ar.setRental_date(rs.getString("rental_date"));
-                ar.setStatus(rs.getString("status").charAt(0));
-                ar_list.add(ar);
-            }
-            ps.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-        return ar_list;
-    }
-    public List<asset_rentals> assetsOnRentList() {
-        ar_list.clear();
-        try {
-            Connection conn = DB.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date FROM asset_rentals WHERE status = 'O'" +
-                    " AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset IS NULL)");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                asset_rentals ar = new asset_rentals();
-                ar.setAsset_id(rs.getInt("asset_id"));
-                ar.setRental_date(rs.getString("rental_date"));
-                ar_list.add(ar);
-            }
-            ps.close();
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println("Error: " + e);
-        }
-        return ar_list;
     }
 
     /*

@@ -31,7 +31,7 @@ public class asset_transaction {
         this.transaction_type = ' ';
     }
 
-    public List<asset_transaction> getATList() {
+    public List<asset_transaction> getRentalTransacList() {
         try {
             at_list.clear();
             Connection conn = DB.getConnection();
@@ -64,6 +64,10 @@ public class asset_transaction {
         return at_list;
     }
 
+    /**
+     * Register a new transaction to the asset_transactions table
+     * @return 1 if successful, 0 if not
+     */
     public int register_transaction() {
         try {
             Connection conn = DB.getConnection();
@@ -97,6 +101,8 @@ public class asset_transaction {
             ps.setString(11, String.valueOf(getTransaction_type()));
             ps.executeUpdate();
 
+            //Code below checks if the current asset being registered is a enclosing asset
+            //If it is, it will register the enclosed assets as well
             assets check_asset = new assets();
             check_asset = check_asset.getAssetInfo(getAsset_id());
             List<assets> enclosed_assets = check_asset.getEnclosed_assets();
@@ -137,7 +143,7 @@ public class asset_transaction {
         return 1;
     }
 
-    public asset_transaction getATInfo(int asset_id, String transaction_date) {
+    public asset_transaction getTransactInfo(int asset_id, String transaction_date) {
         asset_transaction at = new asset_transaction();
         try {
             Connection conn = DB.getConnection();
@@ -169,6 +175,10 @@ public class asset_transaction {
         return at;
     }
 
+    /**
+     * Mark a transaction as deleted
+     * @return 1 if successful, 0 if not
+     */
     public int markDeleteTransaction() {
         try {
             Connection conn = DB.getConnection();
@@ -188,11 +198,21 @@ public class asset_transaction {
         return 1;
     }
 
+    /**
+     * Helper function to generate and set a new OR number for the current transaction
+     */
     public void generateNewOR() {
         reference_ornumber ro = new reference_ornumber();
         setOrnum(ro.generateNewORNumber());
     }
 
+    /**
+     * Set a new OR number for the current transaction
+     * @param asset_id - asset id of the transaction
+     * @param transaction_date - transaction date of the transaction
+     * @param new_ornum - new OR number to be set
+     * @return 1 if successful, 0 if not
+     */
     public int setNewOR(int asset_id, String transaction_date, int new_ornum) {
         try {
             Connection conn = DB.getConnection();

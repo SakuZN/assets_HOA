@@ -78,7 +78,7 @@
         int v_asset_id = Integer.parseInt(values[0]);
         String v_rental_date = values[1];
 
-        rental = rental.getARInfo(v_asset_id, v_rental_date);
+        rental = rental.getRentalInfo(v_asset_id, v_rental_date);
         asset = asset.getAssetInfo(v_asset_id);
         LocalDate today = LocalDate.now();
         char assetStatus = rental.getStatus();

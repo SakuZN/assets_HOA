@@ -77,7 +77,7 @@
         transaction.clear();
         approve_ofc.clear();
         // Get the list of assets rental info to update
-        List<asset_transaction> transToDelete = transaction.getATList();
+        List<asset_transaction> transToDelete = transaction.getRentalTransacList();
         List<reference_officer> approveOfcList = approve_ofc.getApprovingOfc_list();
         // Check if the list is empty
         if (transToDelete.isEmpty()) {

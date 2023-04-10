@@ -19,25 +19,10 @@ public class reference_officer {
         election_date = "";
     }
 
-    public List<reference_officer> getOfc_list() {
-        ofc_list.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM officer");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                reference_officer ofc = new reference_officer();
-                ofc.setHoa_id(rs.getInt("ho_id"));
-                ofc.setPosition(rs.getString("position"));
-                ofc.setElection_date(rs.getString("election_date"));
-                ofc_list.add(ofc);
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return ofc_list;
-    }
+    /**
+     * Gets the list of transaction officers available for the day
+     * @return List of transaction officers
+     */
     public List<reference_officer> getTransOfc_list() {
         ofc_list.clear();
         try {
@@ -58,6 +43,11 @@ public class reference_officer {
         }
         return ofc_list;
     }
+
+    /**
+     * Gets the list of accepting (Financial) officers available for the day
+     * @return List of accepting officers
+     */
     public List<reference_officer> getAcceptOfc_list() {
         ofc_list.clear();
         try {
@@ -78,6 +68,11 @@ public class reference_officer {
         }
         return ofc_list;
     }
+
+    /**
+     * Gets the list of approving officers (President) available for the day
+     * @return List of approving officers
+     */
     public List<reference_officer> getApprovingOfc_list() {
         ofc_list.clear();
         try {
@@ -98,6 +93,14 @@ public class reference_officer {
         }
         return ofc_list;
     }
+
+    /**
+     * Get the info of the given officer
+     * @param ho_id        HOA ID
+     * @param position    Position of the officer
+     * @param election_date   Election date of the officer
+     * @return
+     */
     public reference_officer getOfcInfo(int ho_id, String position, String election_date) {
         reference_officer ofc = new reference_officer();
         try {
@@ -149,6 +152,10 @@ public class reference_officer {
         election_date = "";
     }
 
+    /**
+     * Gets the day of the week
+     * @return Day of the week in appropriate format
+     */
     private String dayToday() {
         LocalDate today = LocalDate.now();
         DayOfWeek day = today.getDayOfWeek();

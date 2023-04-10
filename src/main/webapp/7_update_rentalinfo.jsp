@@ -73,7 +73,7 @@
         rental.clear();
         asset.clear();
         // Get the list of assets rental info to update
-        List<asset_rentals> rentalsForUpdate = rental.getArListtoUpdate();
+        List<asset_rentals> rentalsForUpdate = rental.getRentalsToUpdate();
         // Check if the list is empty
         if (rentalsForUpdate.isEmpty()) {
             // If the list is empty, show a message and disable the submit button

@@ -79,9 +79,9 @@
         int v_asset_id = Integer.parseInt(values[0]);
         String v_rental_date = values[1];
 
-        rental = rental.getARInfo(v_asset_id, v_rental_date);
+        rental = rental.getRentalInfo(v_asset_id, v_rental_date);
         asset = asset.getAssetInfo(v_asset_id);
-        transaction = transaction.getATInfo(v_asset_id, v_rental_date);
+        transaction = transaction.getTransactInfo(v_asset_id, v_rental_date);
         List<reference_officer> approving_officers = approve_ofc.getApprovingOfc_list();
     %>
     <h3>Delete Asset Rental Information Form</h3>

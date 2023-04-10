@@ -217,7 +217,7 @@ public class assets {
     }
 
     /**
-     * When a certain condition happens, remove enclosing_asset from an asset
+     * When certain conditions happens, remove enclosing_asset from an asset
      * @return 1 if successful, 0 if failed
      */
     public int removeEnclosement() {
@@ -258,6 +258,342 @@ public class assets {
             System.out.println("Error: " + e);
         }
         return newID;
+    }
+
+    /**
+     * Get the list of assets that enclose other assets, in other words, are properties
+     * @return ArrayList of assets that are of type property
+     */
+    public ArrayList<assets> getPropertyAssetsList() {
+        this.assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE type_asset " +
+                    "= 'P' AND status NOT IN ('X', 'S', 'P') AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
+                    "WHERE asset_rentals.status IN ('R', 'O'))");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the list of assets that are available to be updated (those that are currently not rented)
+     * @return ArrayList of assets that are available to be updated
+     */
+    public ArrayList<assets> getAssetsForUpdateList() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets " +
+                    "WHERE status " + "!= 'X' AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
+                    "WHERE asset_rentals.status IN " + "('R','O'))");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
+                    asset.setType_asset(rs.getString("type_asset").charAt(0));
+                else
+                    asset.setType_asset(' ');
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the list of assets that are supposedly badly encoded in the database
+     * @return ArrayList of assets that are supposedly badly encoded in the database
+     */
+    public ArrayList<assets> getBadEncode_assets() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets a\n" +
+                    "WHERE a.asset_id NOT IN (\n" +
+                    "    SELECT at.asset_id FROM asset_transactions at\n" +
+                    "    )\n" +
+                    "AND a.asset_id NOT IN (\n" +
+                    "    SELECT da.asset_id FROM donated_assets da\n" +
+                    "    )");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the list of HOA names in the database
+     * @return ArrayList of HOA names in the database
+     */
+    public ArrayList<reference_hoa> getHoaNamesList() {
+        this.hoaList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT hoa_name FROM hoa");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                hoaList.add(new reference_hoa(rs.getString("hoa_name")));
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return hoaList;
+    }
+
+    /**
+     * Get the list of assets that are tagged for disposal
+     * @return ArrayList of assets that are tagged for disposal
+     */
+    public ArrayList<assets> getForDisposal(){
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
+                    "= 'S'");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the list of assets that are tagged for rent
+     * @return ArrayList of assets that are tagged for rent
+     */
+    public List<assets> getForRent(){
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets WHERE status " +
+                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL");
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
+                    asset.setType_asset(rs.getString("type_asset").charAt(0));
+                else
+                    asset.setType_asset(' ');
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the full information of an asset from the database
+     * @param asset_id the id of the asset
+     * @return the asset object
+     */
+    public assets getAssetInfo(int asset_id) {
+        assets asset = new assets();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets WHERE asset_id = ?");
+            stmt.setInt(1, asset_id);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                asset.setAsset_description(rs.getString("asset_description"));
+                asset.setAcquisition_date(rs.getString("acquisition_date"));
+                asset.setStatus(rs.getString("status").charAt(0));
+                asset.setLoc_lattitude(rs.getDouble("loc_lattitude"));
+                asset.setLoc_longiture(rs.getDouble("loc_longiture"));
+                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
+                asset.setForrent(rs.getInt("forrent"));
+                asset.setAsset_value(rs.getDouble("asset_value"));
+                asset.setType_asset(rs.getString("type_asset").charAt(0));
+                asset.setHoa_name(rs.getString("hoa_name"));
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return asset;
+    }
+
+    /**
+     * Get the name of the asset that encloses this asset
+     * @return the name of the asset that encloses this asset
+     */
+    public String getEnclosing_assetName() {
+        String asset_name = "";
+        if (enclosing_asset == -1 || enclosing_asset == 0)
+            return "None";
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_name FROM assets WHERE asset_id = ?");
+            stmt.setInt(1, enclosing_asset);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                asset_name = rs.getString("asset_name");
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return asset_name;
+    }
+
+    /**
+     * Get the list of assets that the enclosing asset contains that are also for rent
+     * @return ArrayList of assets that the enclosing asset contains
+     */
+    public List<assets> getEnclosed_assets() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND forrent = 1");
+            stmt.setInt(1, getAsset_id());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Helper method to get the list of assets that are enclosed by the asset that is being removed
+     * Used in Deletion and Disposal of assets
+     * @return ArrayList of assets that are enclosed by the asset that is being removed
+     */
+    private List<assets> getAssetForEnclosementRemoval() {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P')");
+            stmt.setInt(1, getAsset_id());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
+    }
+
+    /**
+     * Get the list of rented assets that are enclosed by an asset that is being updated
+     * @param transaction_date the date of the transaction | identifier of the transaction
+     * @return ArrayList of rented assets that are enclosed by an asset that is being updated
+     */
+    public List<assets> getEnclosed_RentedAssets(String transaction_date) {
+        assetsList.clear();
+        try {
+            Connection conn = DB.getConnection();
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND asset_id IN (SELECT asset_id " +
+                    "FROM asset_transactions WHERE transaction_date = ?)");
+            stmt.setInt(1, getAsset_id());
+            stmt.setString(2, transaction_date);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                assets asset = new assets();
+                asset.setAsset_id(rs.getInt("asset_id"));
+                asset.setAsset_name(rs.getString("asset_name"));
+                assetsList.add(asset);
+            }
+            conn.close();
+            rs.close();
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return assetsList;
     }
 
     public int getAsset_id() {
@@ -422,345 +758,10 @@ public class assets {
         this.hoa_name = hoa_name;
     }
 
-    /**
-     * Get the list of assets that enclose other assets, in other words, are properties
-     * @return ArrayList of assets that are of type property
-     */
-    public ArrayList<assets> getPropertyAssetsList() {
-        this.assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE type_asset " +
-                    "= 'P' AND status NOT IN ('X', 'S', 'P') AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
-                    "WHERE asset_rentals.status IN ('R', 'O'))");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
 
-    /**
-     * Get the list of assets that are available to be updated (those that are currently not rented)
-     * @return ArrayList of assets that are available to be updated
-     */
-    public ArrayList<assets> getAssetsForUpdateList() {
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets " +
-                    "WHERE status " + "!= 'X' AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
-                    "WHERE asset_rentals.status IN " + "('R','O'))");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
-                    asset.setType_asset(rs.getString("type_asset").charAt(0));
-                else
-                    asset.setType_asset(' ');
-                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Get the list of assets that are supposedly badly encoded in the database
-     * @return ArrayList of assets that are supposedly badly encoded in the database
-     */
-    public ArrayList<assets> getBadEncode_assets() {
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets a\n" +
-                    "WHERE a.asset_id NOT IN (\n" +
-                    "    SELECT at.asset_id FROM asset_transactions at\n" +
-                    "    )\n" +
-                    "AND a.asset_id NOT IN (\n" +
-                    "    SELECT da.asset_id FROM donated_assets da\n" +
-                    "    )" +
-                    "AND forrent = 1;");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Get the list of HOA in the database
-     * @return ArrayList of HOA in the database
-     */
-    public ArrayList<reference_hoa> getHoaList() {
-        this.hoaList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT hoa_name FROM hoa");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                hoaList.add(new reference_hoa(rs.getString("hoa_name")));
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return hoaList;
-    }
-
-    /**
-     * Get the list of assets that are tagged for disposal
-     * @return ArrayList of assets that are tagged for disposal
-     */
-    public ArrayList<assets> getForDisposal(){
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "= 'S'");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Get the list of assets that are tagged for rent
-     * @return ArrayList of assets that are tagged for rent
-     */
-    public List<assets> getForRent(){
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name, type_asset, enclosing_asset FROM assets WHERE status " +
-                    "NOT IN ('X', 'S', 'P') AND forrent = 1 AND enclosing_asset IS NULL");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                if (!rs.getString("type_asset").isEmpty() && rs.getString("type_asset").length() > 0)
-                    asset.setType_asset(rs.getString("type_asset").charAt(0));
-                else
-                    asset.setType_asset(' ');
-                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Get the information of an asset from the database
-     * @param asset_id the id of the asset
-     * @return the asset object
-     */
-    public assets getAssetInfo(int asset_id) {
-        assets asset = new assets();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM assets WHERE asset_id = ?");
-            stmt.setInt(1, asset_id);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                asset.setAsset_description(rs.getString("asset_description"));
-                asset.setAcquisition_date(rs.getString("acquisition_date"));
-                asset.setStatus(rs.getString("status").charAt(0));
-                asset.setLoc_lattitude(rs.getDouble("loc_lattitude"));
-                asset.setLoc_longiture(rs.getDouble("loc_longiture"));
-                asset.setEnclosing_asset(rs.getInt("enclosing_asset"));
-                asset.setForrent(rs.getInt("forrent"));
-                asset.setAsset_value(rs.getDouble("asset_value"));
-                asset.setType_asset(rs.getString("type_asset").charAt(0));
-                asset.setHoa_name(rs.getString("hoa_name"));
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return asset;
-    }
 
     public int getEnclosing_asset() {
         return enclosing_asset;
-    }
-
-    /**
-     * Get the name of the asset that encloses this asset
-     * @return the name of the asset that encloses this asset
-     */
-    public String getEnclosing_assetName() {
-        String asset_name = "";
-        if (enclosing_asset == -1 || enclosing_asset == 0)
-            return "None";
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_name FROM assets WHERE asset_id = ?");
-            stmt.setInt(1, enclosing_asset);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                asset_name = rs.getString("asset_name");
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return asset_name;
-    }
-
-    /**
-     * Get the list of assets that the enclosing asset contains before the asset is rented
-     * @return ArrayList of assets that the enclosing asset contains
-     */
-    public List<assets> getEnclosed_assets() {
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND forrent = 1");
-            stmt.setInt(1, getAsset_id());
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Helper method to get the list of assets that are enclosed by the asset that is being removed
-     * Used in Deletion and Disposal of assets
-     * @return ArrayList of assets that are enclosed by the asset that is being removed
-     */
-    private List<assets> getAssetForEnclosementRemoval() {
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P')");
-            stmt.setInt(1, getAsset_id());
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
-    }
-
-    /**
-     * Get the list of rented assets that are enclosed by an asset that is being updated
-     * @param transaction_date the date of the transaction | identifier of the transaction
-     * @return ArrayList of rented assets that are enclosed by an asset that is being updated
-     */
-    public List<assets> getEnclosed_RentedAssets(String transaction_date) {
-        assetsList.clear();
-        try {
-            Connection conn = DB.getConnection();
-            assert conn != null;
-            PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND asset_id IN (SELECT asset_id " +
-                    "FROM asset_transactions WHERE transaction_date = ?)");
-            stmt.setInt(1, getAsset_id());
-            stmt.setString(2, transaction_date);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                assets asset = new assets();
-                asset.setAsset_id(rs.getInt("asset_id"));
-                asset.setAsset_name(rs.getString("asset_name"));
-                assetsList.add(asset);
-            }
-            conn.close();
-            rs.close();
-            stmt.close();
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
-        return assetsList;
     }
 
     public void setEnclosing_asset(int enclosing_asset) {
