@@ -13,7 +13,7 @@
     <title>Asset Information Update Processing</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, serif;
             background-color: #f2f2f2;
         }
 
