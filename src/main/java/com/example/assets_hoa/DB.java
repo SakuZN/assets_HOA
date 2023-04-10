@@ -8,6 +8,8 @@ public abstract class DB {
 
     public static final String DB_URL = "jdbc:mysql://localhost:3306/hoadb?useTimezone=true&serverTimezone=UTC" +
             "&user=root&password=12345678&useSSL=FALSE";
+    public static final String DB_URL_temp = "jdbc:mysql://localhost:3306/HOADB?useTimezone=true&serverTimezone=UTC" +
+            "&user=root&password=12345678";
 
     public static Connection getConnection() {
         Connection conn = null;

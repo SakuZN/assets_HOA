@@ -6,7 +6,9 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.sql.*, java.util.*, com.example.assets_hoa.*"%>
+<%@ page import="java.sql.*, java.util.*, com.example.assets_hoa.*, java.time.LocalDate"%>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.Date" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -78,7 +80,23 @@
 
         rental = rental.getARInfo(v_asset_id, v_rental_date);
         asset = asset.getAssetInfo(v_asset_id);
+        LocalDate today = LocalDate.now();
         char assetStatus = rental.getStatus();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        boolean willRent = true;
+        Date today_date = null;
+        Date rental_date = null;
+
+        try {
+            today_date = sdf.parse(today.toString());
+            rental_date = sdf.parse(rental.getRental_date());
+            if (rental_date.after(today_date))
+                willRent = false;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     %>
     <h3>Update Asset Rental Information Form</h3>
     <form action="7_update_rentalinfo_processing.jsp">
@@ -100,16 +118,44 @@
                        value="(ID: <%=asset.getEnclosing_asset()%>) <%=asset.getEnclosing_assetName()%>" readonly>
             </label><br>
         <% } %>
+
+        Rental Status:
+        <label for="rental_status"></label>
+        <% if (assetStatus == 'R' && asset.getEnclosing_asset() == 0) { %>
+        <select id="rental_status" name="rental_status">
+            <option value="<%=rental.getStatus()%>"><%=rental.getStatusString()%></option>
+            <%
+                for (String status : rental.getStatusListString()) {
+                    if (!status.equals(rental.getStatusString()) && !status.equals("Returned")) {
+                        if (status.equals("On-Rent") && !willRent) {
+                            continue;
+                        }
+            %>
+            <option value="<%=rental.getStatusEnum(status)%>"><%=status%></option>
+            <% } } %>
+        </select><br>
+        <% } else { %>
+        <select id="rental_status" name="rental_status">
+            <option value="<%=rental.getStatus()%>"><%=rental.getStatusString()%></option>
+        </select><br>
+        <% } %>
+
+        Reservation Date:
+        <label for="reservation_date"></label>
+        <input type="date" id="reservation_date"
+               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        <br>
+
         Rental Date:
         <label for="rental_date"></label>
         <input type="date" id="rental_date"
                name="rental_date" value="<%=rental.getRental_date()%>" readonly>
         <br>
 
-        Reservation Date:
-        <label for="reservation_date"></label>
-        <input type="date" id="reservation_date"
-               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        Return Date:
+        <label for="return_date"></label>
+        <input type="date" id="return_date"
+               name="return_date" value="<%=rental.getReturn_date()%>" readonly>
         <br>
 
         Rental Amount: <label for="rental_amount"></label>
@@ -127,24 +173,6 @@
             <input type="number" id="discount_amount" name="discount_amount" value="<%=rental.getDiscount()%>" readonly>
         <% } %>
         <br>
-
-        Rental Status:
-        <label for="rental_status"></label>
-        <% if (assetStatus == 'R' && (asset.getEnclosing_asset() == 0 && asset.getEnclosed_assets() != null)) { %>
-            <select id="rental_status" name="rental_status">
-                <option value="<%=rental.getStatus()%>"><%=rental.getStatusString()%></option>
-                <%
-                    for (String status : rental.getStatusListString()) {
-                        if (!status.equals(rental.getStatusString()) && !status.equals("Returned")) {
-                %>
-                <option value="<%=rental.getStatusEnum(status)%>"><%=status%></option>
-                <% } } %>
-            </select><br>
-        <% } else { %>
-            <select id="rental_status" name="rental_status">
-                <option value="<%=rental.getStatus()%>"><%=rental.getStatusString()%></option>
-            </select><br>
-        <% } %>
 
         Inspection Details: <label for="inspection_details"></label>
         <% if (assetStatus == 'R' || assetStatus == 'C' || assetStatus == 'O') { %>
@@ -166,11 +194,6 @@
         <input type="text" id="accepting_officer" name="accepting_officer"
                value=" (ID: <%= rental.getAccept_hoid()%>) <%=rental.getAccept_position()%>" readonly>
 
-        Return Date:
-        <label for="return_date"></label>
-        <input type="date" id="return_date"
-               name="return_date" value="<%=rental.getReturn_date()%>" readonly>
-        <br>
 
         <input type="submit" value="Update">
     </form>

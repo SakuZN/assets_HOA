@@ -59,8 +59,11 @@
             int v_asset_id = Integer.parseInt(request.getParameter("asset_id"));
             String v_asset_description = request.getParameter("asset_description");
             int v_forrent = Objects.equals(request.getParameter("for_rent"), "1") ? 1 : 0;
+            System.out.println(v_forrent);
             double v_asset_value = Double.parseDouble(request.getParameter("asset_value"));
             char v_asset_status = request.getParameter("asset_status").charAt(0);
+            if (v_asset_status == 'P' || v_asset_status == 'S')
+                v_forrent = 0;
             double v_loc_lat = Double.parseDouble(request.getParameter("location_latitude"));
             double v_loc_long = Double.parseDouble(request.getParameter("location_longitude"));
             int v_enclosing_id = Integer.parseInt(request.getParameter("enclosing_asset"));

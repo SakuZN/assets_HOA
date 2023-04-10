@@ -48,8 +48,6 @@ public class asset_rentals {
                     "(asset_id, rental_date, reservation_date, resident_id, rental_amount, discount, status, " +
                     "inspection_details, assessed_value, accept_hoid, accept_position, accept_electiondate, return_date) " +
                     "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            System.out.println("ID is " + getAsset_id());
-            System.out.println("Rental date is " + getRental_date());
             ps.setInt(1, getAsset_id());
             ps.setString(2, getRental_date());
             ps.setString(3, getReservation_date());
@@ -201,7 +199,7 @@ public class asset_rentals {
             ps.setInt(12, getAsset_id());
             ps.setString(13, getRental_date());
 
-            System.out.println(ps.executeUpdate());
+            ps.executeUpdate();
             ps.close();
             //For cases if asset is a property, has enclosed assets and is being cancelled
             assets check_asset = new assets();
@@ -210,7 +208,7 @@ public class asset_rentals {
             check_asset = check_asset.getAssetInfo(getAsset_id());
             check_transaction = check_transaction.getATInfo(getAsset_id(), getRental_date());
 
-            List<assets> enclosed_assets = check_asset.freeEnclosed_asset(getRental_date());
+            List<assets> enclosed_assets = check_asset.getEnclosed_RentedAssets(getRental_date());
 
             if (getStatus() == 'C' && check_asset.getType_asset() == 'P' && !enclosed_assets.isEmpty()) {
                 PreparedStatement stmt = conn.prepareStatement("UPDATE asset_rentals SET " +
@@ -487,7 +485,7 @@ public class asset_rentals {
             Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement("SELECT asset_id, rental_date, status FROM asset_rentals " +
                     "WHERE status IN ('R', 'N') AND asset_id IN (SELECT asset_id FROM assets WHERE enclosing_asset " +
-                    "IS NULL) ORDER BY status DESC, asset_id ASC, rental_date ASC");
+                    "IS NULL) ORDER BY status ASC, asset_id ASC, rental_date ASC");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 asset_rentals ar = new asset_rentals();

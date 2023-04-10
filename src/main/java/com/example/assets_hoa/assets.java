@@ -432,7 +432,8 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE type_asset " +
-                    "= 'P' AND status NOT IN ('X', 'S')");
+                    "= 'P' AND status NOT IN ('X', 'S', 'P') AND asset_id NOT IN (SELECT asset_id FROM asset_rentals " +
+                    "WHERE asset_rentals.status IN ('R', 'O'))");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -451,7 +452,7 @@ public class assets {
     }
 
     /**
-     * Get the list of assets that are available to be updated
+     * Get the list of assets that are available to be updated (those that are currently not rented)
      * @return ArrayList of assets that are available to be updated
      */
     public ArrayList<assets> getAssetsForUpdateList() {
@@ -460,7 +461,8 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets WHERE status " +
-                    "!= 'X' AND forrent = 1");
+                    "!= 'X' AND asset_id NOT IN (SELECT asset_id FROM asset_rentals WHERE asset_rentals.status IN " +
+                    "('R','O'))");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 assets asset = new assets();
@@ -662,7 +664,7 @@ public class assets {
     }
 
     /**
-     * Get the list of assets that the enclosing asset contains
+     * Get the list of assets that the enclosing asset contains before the asset is rented
      * @return ArrayList of assets that the enclosing asset contains
      */
     public List<assets> getEnclosed_assets() {
@@ -671,7 +673,7 @@ public class assets {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND forrent = 1 AND status NOT IN ('X', 'S', 'P')");
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND forrent = 1");
             stmt.setInt(1, getAsset_id());
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -692,6 +694,7 @@ public class assets {
 
     /**
      * Helper method to get the list of assets that are enclosed by the asset that is being removed
+     * Used in Deletion and Disposal of assets
      * @return ArrayList of assets that are enclosed by the asset that is being removed
      */
     private List<assets> getAssetForEnclosementRemoval() {
@@ -720,18 +723,18 @@ public class assets {
     }
 
     /**
-     * Get the list of assets that are enclosed by the asset that is being removed
-     * @param transaction_date
-     * @return
+     * Get the list of rented assets that are enclosed by an asset that is being updated
+     * @param transaction_date the date of the transaction | identifier of the transaction
+     * @return ArrayList of rented assets that are enclosed by an asset that is being updated
      */
-    public List<assets> freeEnclosed_asset(String transaction_date) {
+    public List<assets> getEnclosed_RentedAssets(String transaction_date) {
         assetsList.clear();
         try {
             Connection conn = DB.getConnection();
             assert conn != null;
             PreparedStatement stmt = conn.prepareStatement("SELECT asset_id, asset_name FROM assets " +
-                    "WHERE enclosing_asset = ? AND forrent = 0 AND asset_id IN (SELECT asset_id FROM " +
-                    "asset_transactions WHERE transaction_date = ?) AND status NOT IN ('X', 'S', 'P') ");
+                    "WHERE enclosing_asset = ? AND status NOT IN ('X', 'S', 'P') AND asset_id IN (SELECT asset_id " +
+                    "FROM asset_transactions WHERE transaction_date = ?)");
             stmt.setInt(1, getAsset_id());
             stmt.setString(2, transaction_date);
             ResultSet rs = stmt.executeQuery();

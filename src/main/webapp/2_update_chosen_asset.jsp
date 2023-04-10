@@ -32,14 +32,13 @@
             margin: 0;
         }
 
-        input[type=checkbox][readonly] {
+        input[type=checkbox] {
             margin: 8px 0;
             display: inline-block;
             border: 1px solid #ccc;
             height: 20px;
             width: 20px;
             vertical-align: middle;
-            pointer-events: none;
             opacity: 0.5;
         }
 
@@ -96,7 +95,7 @@
             boolean isChecked = asset.getForrent() == 1;
         %>
         For Rent: <label for="for_rent"></label>
-        <input type="checkbox" id="for_rent" name="for_rent" value="1" <%= isChecked ? "checked" : "" %> readonly>
+        <input type="checkbox" id="for_rent" name="for_rent" value="1" <%= isChecked ? "checked" : "" %>>
         <br>
         Asset Value: <label for="asset_value"></label>
         <input type="number" id="asset_value" name="asset_value" value="<%=asset.getAsset_value()%>" required><br>

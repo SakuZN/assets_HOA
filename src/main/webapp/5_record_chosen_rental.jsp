@@ -105,6 +105,13 @@
             <% } %>
         </select><br>
         <% } %>
+
+        Rental Status:
+        <label for="rental_status"></label>
+        <select id="rental_status" name="rental_status">
+            <option value="R">Reserved</option>
+        </select><br>
+
         Renter ID:
         <label for="resident_id"></label>
         <select id="resident_id" name="resident_id">
@@ -119,11 +126,6 @@
         Rental Date: <label for="rental_date"></label>
         <input type="date" id="rental_date" name="rental_date" required>
         <br>
-        Rental Status:
-        <label for="rental_status"></label>
-        <select id="rental_status" name="rental_status">
-            <option value="R">Reserved</option>
-        </select><br>
         Transaction Officer ID:
         <label for="trans_ofc"></label>
         <select id="trans_ofc" name="trans_ofc">

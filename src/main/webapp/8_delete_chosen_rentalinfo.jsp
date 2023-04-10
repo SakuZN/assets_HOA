@@ -98,16 +98,22 @@
                    value="<%=asset.getAsset_id()%>" readonly>
         </label><br>
 
+        Reservation Date:
+        <label for="reservation_date"></label>
+        <input type="date" id="reservation_date"
+               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        <br>
+
         Rental/Transaction Date:
         <label for="transaction_date"></label>
         <input type="date" id="transaction_date"
                name="transaction_date" value="<%=transaction.getTransaction_date()%>" readonly>
         <br>
 
-        Reservation Date:
-        <label for="reservation_date"></label>
-        <input type="date" id="reservation_date"
-               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        Return Date:
+        <label for="return_date"></label>
+        <input type="date" id="return_date"
+               name="return_date" value="<%=rental.getReturn_date()%>" readonly>
         <br>
 
         Rental Amount: <label for="rental_amount"></label>
@@ -133,12 +139,7 @@
         Accepting Officer: <label for="accepting_officer"></label>
         <input type="text" id="accepting_officer" name="accepting_officer"
                value=" (ID: <%= rental.getAccept_hoid()%>) <%=rental.getAccept_position()%>" readonly>
-        Return Date:
-        <label for="return_date"></label>
-        <input type="date" id="return_date"
-               name="return_date" value="<%=rental.getReturn_date()%>" readonly>
-        <br>
-        <br>
+
         Transaction Officer: <label for="transaction_officer"></label>
         <input type="text" id="transaction_officer" name="transaction_officer"
                value=" (ID: <%= transaction.getTrans_hoid()%>) <%=transaction.getTrans_position()%>" readonly>

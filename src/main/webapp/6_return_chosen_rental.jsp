@@ -83,6 +83,8 @@
             rental = rental.getARInfo(v_asset_id, v_rental_date);
             asset = asset.getAssetInfo(v_asset_id);
             List<reference_officer> accepting_ofc_list = accept_ofc.getAcceptOfc_list();
+            // Get the list of enclosed assets, if any
+            List<assets> enclosed_assets = asset.getEnclosed_RentedAssets(v_rental_date);
         %>
         Asset Name:
         <label>
@@ -94,15 +96,37 @@
             <input type="text" id="asset_id" name="asset_id"
                    value="<%=asset.getAsset_id()%>" readonly>
         </label><br>
+
+        <%if (!enclosed_assets.isEmpty()) {%>
+        Enclosed Assets:
+        <label for="enclosed_assets"></label>
+        <select id="enclosed_assets" name="enclosed_assets">
+            <%
+                for (assets a : enclosed_assets) { %>
+            <option value="<%=a.getAsset_id()%>">(ID:<%=a.getAsset_id()%>) <%=a.getAsset_name()%></option>
+            <% } %>
+        </select><br>
+        <% } %>
+
+        Rental Status:
+        <label for="rental_status"></label>
+        <select id="rental_status" name="rental_status">
+            <option value="<%=rental.getStatusEnum("Returned")%>">Returned</option>
+        </select><br>
+        Reservation Date:
+        <label for="reservation_date"></label>
+        <input type="date" id="reservation_date"
+               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        <br>
         Rental Date:
         <label for="rental_date"></label>
         <input type="date" id="rental_date"
                name="rental_date" value="<%=rental.getRental_date()%>" readonly>
         <br>
-        Reservation Date:
-        <label for="reservation_date"></label>
-        <input type="date" id="reservation_date"
-               name="reservation_date" value="<%=rental.getReservation_date()%>" readonly>
+        Return Date:
+        <label for="return_date"></label>
+        <input type="date" id="return_date"
+               name="return_date" required>
         <br>
         Rental Amount: <label for="rental_amount"></label>
         <input type="number" id="rental_amount" name="rental_amount" required>
@@ -110,11 +134,6 @@
         Discount: <label for="discount_amount"></label>
         <input type="number" id="discount_amount" name="discount_amount" required>
         <br>
-        Rental Status:
-        <label for="rental_status"></label>
-        <select id="rental_status" name="rental_status">
-            <option value="<%=rental.getStatusEnum("Returned")%>">Returned</option>
-        </select><br>
         Inspection Details: <label for="inspection_details"></label>
         <input type="text" id="inspection_details" name="inspection_details" required>
         <br>
@@ -131,11 +150,6 @@
             </option>
             <% } %>
         </select><br>
-        Return Date:
-        <label for="return_date"></label>
-        <input type="date" id="return_date"
-               name="return_date" required>
-        <br>
         <input type="submit" value="Update">
     </form>
 </div>
